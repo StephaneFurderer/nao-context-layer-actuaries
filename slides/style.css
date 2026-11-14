@@ -1,0 +1,2 @@
+/* wrap long lines in code blocks so annotations and RULES stay readable */
+.slidev-layout pre code, .slidev-code { white-space: pre-wrap !important; word-break: break-word; }
