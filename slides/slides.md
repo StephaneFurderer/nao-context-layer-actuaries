@@ -25,7 +25,7 @@ Stéphane Furderer · Actuarial Technology Summit · December 15, 2026<br/>
 
 <img src="/waterfall.svg" class="mx-auto h-96" />
 
-<div class="text-center opacity-70">Three rules, nine points. Same data; both queries run. Valued 2026-09-30 · case incurred, no IBNR · synthetic travel insurer</div>
+<div class="text-center opacity-70">Three rules, nine points. Same data; both queries run. Valued 2026-09-30 · incurred net of recoveries, gross of reinsurance, excl. LAE · no IBNR · synthetic travel insurer</div>
 
 <!--
 [TP-01] What was our accident-year 2025 loss ratio? Here are two answers from the same data. Fifty-eight point one percent. And forty-nine point four. Both queries run. Both numbers look fine on a slide. Only one is right. The gap is three rules that every actuary knows. Use earned premium, not written. Subtract recoveries. Remove the test partner. Three rules, nine points. Today I want to show you where those rules should live, so that an AI analyst reads them before it answers. It all runs on a synthetic travel insurer, so you can download it and try it yourself.
@@ -58,7 +58,7 @@ Stéphane Furderer · Actuarial Technology Summit · December 15, 2026<br/>
 <div class="mt-14 text-3xl text-center font-bold">It cannot read your decisions.</div>
 
 <!--
-[TP-02] Now, I expected the AI to fail here. Mostly, it did not. I gave a model only the tables and the data. It worked out that code forty is a recovery. It found the test partner, because its claims all had the same round amount. Impressive. Then I asked questions that depend on our decisions. What exactly is attritional? Where is our large-loss threshold? Here, it had to guess. And its guesses looked right. That is the dangerous kind. So here is the idea for today. The AI can read your data. It cannot read your decisions.
+[TP-02] Now, I expected the AI to fail here. Mostly, it did not. I gave a model only the tables and the data. It worked out that code forty is a recovery. It found the test partner, because the partner list labels it internal. Impressive. Then I asked questions that depend on our decisions. What exactly is attritional? Where is our large-loss threshold? Here, it had to guess. And its guesses looked right. That is the dangerous kind. So here is the idea for today. The AI can read your data. It cannot read your decisions.
 -->
 
 ---
@@ -155,7 +155,7 @@ class: text-center
 <div class="border-2 rounded-lg p-5">
 
 ### Loss ratio
-incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<br/>accident year · valued 30 Sep 2026 · **no IBNR**<br/>
+incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross earned** premium<br/>accident year · valued 30 Sep 2026 · **no IBNR** (AY 2025 fully closed)<br/>
 <span class="opacity-70">owner: reserving actuary</span>
 
 </div>
@@ -171,7 +171,7 @@ incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<b
 <div class="mt-10 text-2xl text-center">Cap: <b>38.2%</b> · Drop instead: <b>32.8%</b> · both defensible, only one is ours</div>
 
 <!--
-[TP-06] Step three is the heart of it: our decisions. One definition per metric, with an owner. Loss ratio: incurred, net of recoveries, gross of reinsurance, over earned premium, accident-year basis, no IBNR. Then the choices only we can make. A large loss is five thousand dollars or more. Attritional removes the hurricane claims and caps every other claim at five thousand. Another company might drop large claims instead. That gives thirty-two point eight instead of thirty-eight point two. Both are defensible. The AI cannot know which one is ours.
+[TP-06] Step three is the heart of it: our decisions. One definition per metric, with an owner. Loss ratio: incurred, net of recoveries, gross of reinsurance, over gross earned premium, accident-year basis, no IBNR. Then the choices only we can make. A large loss is five thousand dollars or more. Attritional removes the hurricane claims and caps every other claim at five thousand. Another company might drop large claims instead. That gives thirty-two point eight. Ours gives thirty-eight point two. Both are defensible. The AI can read your data. It cannot read your decisions.
 -->
 
 ---
@@ -191,7 +191,7 @@ incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<b
 <div class="mt-8 text-xl opacity-80">"What's the loss ratio?" → <i>"For which accident year, and all-in or attritional?"</i></div>
 
 <!--
-[TP-07] Step four is a one-page rule sheet. The agent reads it with every question, so it stays short. It points to the definitions instead of copying them. It lists the rules that always apply: earned premium, no test partner. It says that "today" means our valuation date, the thirtieth of September. And the most important rule: when the question is unclear, ask. If someone types "what's the loss ratio?", with no year and no basis, a good analyst asks one question back.
+[TP-07] Step four is a one-page rule sheet. The agent reads it with every question, so it stays short. It points to the definitions instead of copying them. It lists the rules that always apply: earned premium, no test partner. It says that "today" means our valuation date: the end of September. And the most important rule: when the question is unclear, ask. If someone types "what's the loss ratio?", with no year and no basis, a good analyst asks one question back.
 -->
 
 ---
@@ -205,17 +205,17 @@ incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<b
 |---|:-:|:-:|:-:|
 | loss ratio, by region, by coverage, earned, monthly | ✅ | ✅ | ✅ |
 | **large losses** (≥ \$5k) | ❌ \$10k | ❌ \$10k | ✅ |
-| **attritional loss ratio** | ❌ 39.1% | ❌ 39.1% | ✅ 38.2% |
+| **attritional loss ratio** | ❌ 39.1% *(dropped ≥ \$10k)* | ❌ 39.1% | ✅ 38.2% |
 | frequency (per 1,000) | ⚠️ per policy | ⚠️ per policy | ✅ |
 | "What's the loss ratio?" → ask | ✅ / ❌ | ✅ | ✅ |
 | **passed** (two runs each) | **6 · 5** | **6 · 6** | **9 · 9** |
 
 </div>
 
-<div class="text-xs opacity-60 mt-1">Blind Claude Sonnet analysts, one context level each, graded at 4 decimals by evals/grade.py (mimics nao test). Synthetic data, small n, presenter's own grader. Not a production result.</div>
+<div class="text-xs opacity-60 mt-1">SIMULATION, not nao output: blind Claude Sonnet analysts, one context level each, graded at 4 decimals by evals/grade.py (mimics nao test). Synthetic data, small n, presenter's own grader. Not a production result.</div>
 
 <!--
-[TP-08] Step five: before you trust the agent, write the answer key. Each test is a question in plain English, plus the SQL an actuary signs off. Nao runs the agent and compares its numbers with yours. One lesson: my first definitions included sample SQL, and a reviewer caught it. That is giving the answers away, so I removed it. Then I tested AI analysts at three levels. Tables only: five or six out of nine. Plus table notes: six. Plus our decisions: nine out of nine, twice. Synthetic data, small test, my own grader.
+[TP-08] Step five: before you trust the agent, write the answer key. Each test is a question in plain English, plus the SQL an actuary signs. Nao runs the agent and compares its numbers with yours. One lesson: my first definitions included sample SQL, and a reviewer caught it. That is giving the answers away, so I removed it. Then I simulated this outside nao, with AI analysts at three levels of context. Tables only: five or six out of nine. Plus table notes: six. Plus our decisions: nine out of nine, twice. Synthetic data, small test, my own grader.
 -->
 
 ---
@@ -227,7 +227,7 @@ class: text-center
 
 # Claire Gouze · CEO, nao Labs
 
-### When an answer is wrong: is it the context, the data, the model or the query?
+### When an answer is wrong: is it the context, the data, the query, or the test?
 
 ---
 ---
@@ -241,11 +241,11 @@ class: text-center
 <div class="border-2 rounded-lg p-5 border-blue-500"><b>Test</b><p class="text-base">a vague question or answer key</p></div>
 </div>
 
-<div class="mt-10 text-xl">0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
+<div class="mt-10 text-xl">Asia 2025: 0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
 <div class="mt-3 text-lg opacity-80">Claire's study: most of the gain came from the data model; fixing tests mattered, but less.</div>
 
 <!--
-[TP-09] So when a test fails, label it first. Context, data, query, or the test itself. In my runs, every agent without definitions said frequency was zero point zero eight. The answer key said eighty-two per thousand. Same number, different unit. Is that a wrong answer, or a vague question? Claire saw the same in her study. Some failures were the tests' fault. But most of her gain came from fixing the data model, not the prompts.
+[TP-09] So when a test fails, label it first. Context, data, query, or the test itself. In my runs, every agent without definitions gave Asia's frequency as zero point zero eight. The answer key said eighty-two per thousand. Same number, different unit. Is that a wrong answer, or a vague question? Claire saw the same in her study. Some failures came from badly written tests. But most of her gain came from fixing the data model, not the prompts.
 -->
 
 ---
@@ -258,10 +258,10 @@ class: text-center
 <img src="/caribbean_monthly.svg" class="h-76 mx-auto" />
 </div>
 
-<div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: under 20/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
+<div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: ~13/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
 
 <!--
-[TP-10] Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from under twenty a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. In full disclosure, I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
+[TP-10] Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from about thirteen a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. To be clear: I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
 -->
 
 ---
@@ -289,7 +289,7 @@ class: text-center
 </div>
 
 <!--
-[TP-11] Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off catastrophe we load for, or a trend we should price into Caribbean trips? Do we revisit the cruise partner? Those decisions carry your signature. What the context layer does is remember the decision once you make it. The next person who asks gets your answer, not a fresh guess.
+[TP-11] Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off event, or a cat exposure we must now price for in the Caribbean? Do we revisit the cruise partner? Those decisions carry your signature. What the context layer does is remember the decision once you make it. The next person who asks gets your answer, not a fresh guess.
 -->
 
 ---

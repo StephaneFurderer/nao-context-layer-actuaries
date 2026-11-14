@@ -65,7 +65,7 @@ Stéphane Furderer · Actuarial Technology Summit · December 15, 2026<br/>
 
 <img src="/waterfall.svg" class="mx-auto h-96" />
 
-<div class="text-center opacity-70">Three rules, nine points. Same data; both queries run. Valued 2026-09-30 · case incurred, no IBNR · synthetic travel insurer</div>
+<div class="text-center opacity-70">Three rules, nine points. Same data; both queries run. Valued 2026-09-30 · incurred net of recoveries, gross of reinsurance, excl. LAE · no IBNR · synthetic travel insurer</div>
 """),
     ("TP-02", """---
 ---
@@ -165,7 +165,7 @@ context/              ← a nao project = a folder
 <div class="border-2 rounded-lg p-5">
 
 ### Loss ratio
-incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<br/>accident year · valued 30 Sep 2026 · **no IBNR**<br/>
+incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross earned** premium<br/>accident year · valued 30 Sep 2026 · **no IBNR** (AY 2025 fully closed)<br/>
 <span class="opacity-70">owner: reserving actuary</span>
 
 </div>
@@ -207,16 +207,16 @@ incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<b
 |---|:-:|:-:|:-:|
 | loss ratio, by region, by coverage, earned, monthly | ✅ | ✅ | ✅ |
 | **large losses** (≥ \\$5k) | ❌ \\$10k | ❌ \\$10k | ✅ |
-| **attritional loss ratio** | ❌ 39.1% | ❌ 39.1% | ✅ 38.2% |
+| **attritional loss ratio** | ❌ 39.1% *(dropped ≥ \\$10k)* | ❌ 39.1% | ✅ 38.2% |
 | frequency (per 1,000) | ⚠️ per policy | ⚠️ per policy | ✅ |
 | "What's the loss ratio?" → ask | ✅ / ❌ | ✅ | ✅ |
 | **passed** (two runs each) | **6 · 5** | **6 · 6** | **9 · 9** |
 
 </div>
 
-<div class="text-xs opacity-60 mt-1">Blind Claude Sonnet analysts, one context level each, graded at 4 decimals by evals/grade.py (mimics nao test). Synthetic data, small n, presenter's own grader. Not a production result.</div>
+<div class="text-xs opacity-60 mt-1">SIMULATION, not nao output: blind Claude Sonnet analysts, one context level each, graded at 4 decimals by evals/grade.py (mimics nao test). Synthetic data, small n, presenter's own grader. Not a production result.</div>
 """),
-    (None, CLIP("B", "When an answer is wrong: is it the context, the data, the model or the query?")),
+    (None, CLIP("B", "When an answer is wrong: is it the context, the data, the query, or the test?")),
     ("TP-09", """---
 ---
 
@@ -229,7 +229,7 @@ incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<b
 <div class="border-2 rounded-lg p-5 border-blue-500"><b>Test</b><p class="text-base">a vague question or answer key</p></div>
 </div>
 
-<div class="mt-10 text-xl">0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
+<div class="mt-10 text-xl">Asia 2025: 0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
 <div class="mt-3 text-lg opacity-80">Claire's study: most of the gain came from the data model; fixing tests mattered, but less.</div>
 """),
     ("TP-10", """---
@@ -242,7 +242,7 @@ incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<b
 <img src="/caribbean_monthly.svg" class="h-76 mx-auto" />
 </div>
 
-<div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: under 20/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
+<div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: ~13/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
 """),
     ("TP-11", """---
 ---

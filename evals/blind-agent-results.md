@@ -26,7 +26,7 @@
 
 ### Reading it honestly
 
-- **The data-meaning rules were mostly inferred.** Even with tables only, agents worked out that code `40` is a recovery and that `ZZTEST` is test data, from evidence in the data (reserves net to zero; identical round claim amounts).
+- **The data-meaning rules were mostly inferred.** Even with tables only, agents worked out that code `40` is a recovery and that `ZZTEST` is test data, from evidence in the data (reserves net to zero; the partner list labels ZZTEST as `internal`). Note: several agents said the $9,999.99 test claims looked like a cap cluster, which may have nudged their $10k large-loss guess.
 - **The table notes (L1) changed nothing on this test set.** They make inferred rules *explicit and repeatable*, but every L1 miss was a company **decision**.
 - **The decisions were never inferred.** None of the four agents without `semantics/` found the $5k threshold or the cap-vs-drop convention. Their 39.1% looks entirely plausible.
 - **The unit failure is debatable** (see TP-09). It could be a wrong answer or a vague question. We count it as a failure because the reported number would be wrong by 1,000×, and flag it separately.

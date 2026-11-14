@@ -64,7 +64,7 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 | R1 | `sql/waterfall_2025.sql` | The AY2025 loss ratio moves from a naive **58.1%** to a reference **49.4%** as three rules are applied. Earned premium *raises* it slightly (58.1→60.1); recoveries (→54.9) and dropping ZZTEST (→49.4) bring it down. Asserted by `evals/check_reference_sql.py`. |
 | R2 | `context/tests/*.yml` + `evals/grade.py` | Nine reference questions (one must trigger a clarifying question), graded like `nao test` at 4 decimals |
 | R3 | `evals/blind-agent-results.md` | Run 4, final: tables only 6/9 and 5/9; plus table notes 6/9 and 6/9; full context 9/9 and 9/9. A simulation, not a nao run. |
-| R4 | `context/tests/loss_ratio_by_region_ay2025.yml` | Caribbean AY2025 loss ratio is **100.3%**, against 23–48% for every other region. Cancellations jump from under 20 a month to about 100 from August to October 2025. **Planted** in the synthetic data, and disclosed on stage. |
+| R4 | `context/tests/loss_ratio_by_region_ay2025.yml` | Caribbean AY2025 loss ratio is **100.3%**, against 23–48% for every other region. Cancellations jump from about 13 a month (Jan–Jun average) to about 100 from August to October 2025. **Planted** in the synthetic data, and disclosed on stage. |
 
 ## TL;DRs (one line each, for quick reuse on stage or in posts)
 

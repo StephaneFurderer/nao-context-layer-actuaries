@@ -12,7 +12,7 @@ Fields:
 - **Proof**: repo evidence
 - **Sources**: source-bank ids
 
-The through-line, said at TP-02 and TP-06: *"The AI can read your data. It cannot read your decisions."*
+The through-line, said at TP-02 and again at TP-06: *"The AI can read your data. It cannot read your decisions."*
 The closing line, said aloud at TP-15: *"The model is fast. Your definitions make it right."*
 
 v2 changes after the review round are listed in `reviews/README.md`.
@@ -30,7 +30,7 @@ v2 changes after the review round are listed in `reviews/README.md`.
 
 ### TP-02 — The AI can read your data
 **Doing:** Show that the model handles the data well, so the real gap is our decisions.
-**Say:** Now, I expected the AI to fail here. Mostly, it did not. I gave a model only the tables and the data. It worked out that code forty is a recovery. It found the test partner, because its claims all had the same round amount. Impressive. Then I asked questions that depend on our decisions. What exactly is attritional? Where is our large-loss threshold? Here, it had to guess. And its guesses looked right. That is the dangerous kind. So here is the idea for today. The AI can read your data. It cannot read your decisions.
+**Say:** Now, I expected the AI to fail here. Mostly, it did not. I gave a model only the tables and the data. It worked out that code forty is a recovery. It found the test partner, because the partner list labels it internal. Impressive. Then I asked questions that depend on our decisions. What exactly is attritional? Where is our large-loss threshold? Here, it had to guess. And its guesses looked right. That is the dangerous kind. So here is the idea for today. The AI can read your data. It cannot read your decisions.
 **Show:** "Read vs decide" slide: what it inferred on the left, what it had to guess on the right, with the through-line as a banner.
 **Proof:** `evals/blind-agent-results.md`
 **Sources:** R3, C2
@@ -65,30 +65,30 @@ v2 changes after the review round are listed in `reviews/README.md`.
 
 ### TP-06 — Step 3: write down your decisions
 **Doing:** Write one owned definition per metric, including conventions only the company can decide.
-**Say:** Step three is the heart of it: our decisions. One definition per metric, with an owner. Loss ratio: incurred, net of recoveries, gross of reinsurance, over earned premium, accident-year basis, no IBNR. Then the choices only we can make. A large loss is five thousand dollars or more. Attritional removes the hurricane claims and caps every other claim at five thousand. Another company might drop large claims instead. That gives thirty-two point eight instead of thirty-eight point two. Both are defensible. The AI cannot know which one is ours.
+**Say:** Step three is the heart of it: our decisions. One definition per metric, with an owner. Loss ratio: incurred, net of recoveries, gross of reinsurance, over gross earned premium, accident-year basis, no IBNR. Then the choices only we can make. A large loss is five thousand dollars or more. Attritional removes the hurricane claims and caps every other claim at five thousand. Another company might drop large claims instead. That gives thirty-two point eight. Ours gives thirty-eight point two. Both are defensible. The AI can read your data. It cannot read your decisions.
 **Show:** Two definition cards side by side, then the 38.2% vs 32.8% callout.
 **Proof:** `context/semantics/loss_ratio.md`, `context/semantics/large_and_cat_losses.md`, `sql/attritional_dropped_variant_2025.sql`
 **Sources:** A4, A5
 
 ### TP-07 — Step 4: the rule sheet, and when to ask
 **Doing:** Keep one short rule sheet: where definitions live, what always applies, and when to ask.
-**Say:** Step four is a one-page rule sheet. The agent reads it with every question, so it stays short. It points to the definitions instead of copying them. It lists the rules that always apply: earned premium, no test partner. It says that "today" means our valuation date, the thirtieth of September. And the most important rule: when the question is unclear, ask. If someone types "what's the loss ratio?", with no year and no basis, a good analyst asks one question back.
+**Say:** Step four is a one-page rule sheet. The agent reads it with every question, so it stays short. It points to the definitions instead of copying them. It lists the rules that always apply: earned premium, no test partner. It says that "today" means our valuation date: the end of September. And the most important rule: when the question is unclear, ask. If someone types "what's the loss ratio?", with no year and no basis, a good analyst asks one question back.
 **Show:** The rule sheet as five plain-language bullets, with "When unclear, ask" in bold.
 **Proof:** `context/RULES.md`
 **Sources:** A4
 
 ### TP-08 — Step 5: write the answer key, then test
 **Doing:** Turn each question into a test with signed-off SQL, then compare agents with and without context.
-**Say:** Step five: before you trust the agent, write the answer key. Each test is a question in plain English, plus the SQL an actuary signs off. Nao runs the agent and compares its numbers with yours. One lesson: my first definitions included sample SQL, and a reviewer caught it. That is giving the answers away, so I removed it. Then I tested AI analysts at three levels. Tables only: five or six out of nine. Plus table notes: six. Plus our decisions: nine out of nine, twice. Synthetic data, small test, my own grader.
+**Say:** Step five: before you trust the agent, write the answer key. Each test is a question in plain English, plus the SQL an actuary signs. Nao runs the agent and compares its numbers with yours. One lesson: my first definitions included sample SQL, and a reviewer caught it. That is giving the answers away, so I removed it. Then I simulated this outside nao, with AI analysts at three levels of context. Tables only: five or six out of nine. Plus table notes: six. Plus our decisions: nine out of nine, twice. Synthetic data, small test, my own grader.
 **Show:** The results grid (three levels, with the attritional and large-loss rows highlighted).
 **Proof:** `context/tests/attritional_loss_ratio_ay2025.yml`, `evals/blind-agent-results.md`, `evals/grade.py`
 **Sources:** A7, R2, R3
 
-> **CLIP B** (Claire: when an answer is wrong, is it the context, the data, the model or the query?) 3 min
+> **CLIP B** (Claire: when an answer is wrong, is it the context, the data, the query or the test?) 3 min
 
 ### TP-09 — Diagnose before you fix
 **Doing:** Label each failure as context, data, query or test before changing anything.
-**Say:** So when a test fails, label it first. Context, data, query, or the test itself. In my runs, every agent without definitions said frequency was zero point zero eight. The answer key said eighty-two per thousand. Same number, different unit. Is that a wrong answer, or a vague question? Claire saw the same in her study. Some failures were the tests' fault. But most of her gain came from fixing the data model, not the prompts.
+**Say:** So when a test fails, label it first. Context, data, query, or the test itself. In my runs, every agent without definitions gave Asia's frequency as zero point zero eight. The answer key said eighty-two per thousand. Same number, different unit. Is that a wrong answer, or a vague question? Claire saw the same in her study. Some failures came from badly written tests. But most of her gain came from fixing the data model, not the prompts.
 **Show:** Four buckets: Context, Data, Query, Test.
 **Proof:** `evals/blind-agent-results.md`, `evals/grade.py`
 **Sources:** B3, A7
@@ -99,15 +99,15 @@ v2 changes after the review round are listed in `reviews/README.md`.
 
 ### TP-10 — The investigation
 **Doing:** Follow the deterioration from portfolio to cause with the tested context, step by step.
-**Say:** Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from under twenty a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. In full disclosure, I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
+**Say:** Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from about thirteen a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. To be clear: I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
 **Show:** nao chat recording with jump-cuts: three questions, three charts.
-**Demo:** 8s
+**Demo:** 12s
 **Proof:** `context/tests/loss_ratio_by_region_ay2025.yml`, `context/tests/caribbean_cancellation_claims_by_month_2025.yml`, `slides/charts.py`
 **Sources:** R4
 
 ### TP-11 — Judgement stays with the actuary
 **Doing:** Separate what the agent found from what an actuary must decide and record.
-**Say:** Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off catastrophe we load for, or a trend we should price into Caribbean trips? Do we revisit the cruise partner? Those decisions carry your signature. What the context layer does is remember the decision once you make it. The next person who asks gets your answer, not a fresh guess.
+**Say:** Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off event, or a cat exposure we must now price for in the Caribbean? Do we revisit the cruise partner? Those decisions carry your signature. What the context layer does is remember the decision once you make it. The next person who asks gets your answer, not a fresh guess.
 **Show:** Two columns: "Found by the agent" and "Decided by you".
 **Proof:** `context/semantics/large_and_cat_losses.md`
 **Sources:** H2, H1

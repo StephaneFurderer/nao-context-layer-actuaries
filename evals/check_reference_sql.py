@@ -37,7 +37,7 @@ expect("other regions min (TP-10: 23%)", min(others), 0.226, tol=0.005)
 expect("other regions max (TP-10: 48%)", max(others), 0.4757, tol=0.005)
 expect("large losses AY2025 (count, >= $5k)", one("large_loss_count_ay2025")[0][0], 48)
 months = {m.month: n for m, n in one("caribbean_cancellation_claims_by_month_2025")}
-expect("Caribbean cancellations: max Jan-Jul 2025 (TP-10: under 20/month)", max(months[i] for i in range(1, 8)), 20)
+expect("Caribbean cancellations, avg Jan-Jun 2025 (TP-10: about 13/month)", sum(months[i] for i in range(1, 7)) / 6, 13.3, tol=0.5)
 expect("Caribbean cancellations, Aug 2025 (TP-10: ~100)", months[8], 102)
 expect("Caribbean cancellations, Oct 2025 (TP-10: still ~100)", months[10], 94)
 expect("policies (60k)", con.sql("select count(*) from mart.policies").fetchone()[0], 60000)

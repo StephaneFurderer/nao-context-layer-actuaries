@@ -59,7 +59,7 @@ nao test -k 3                        # 9 reference questions, 3 runs each (pass^
 nao test server                      # results UI at http://localhost:8765
 ```
 
-Don't run `make data` while `nao chat` is open: both open the DuckDB file.
+Don't run `make data` while `nao chat` is open: both open the DuckDB file. After `make all`, git shows the five `profiling.md` files as changed; only their `Computed at` timestamp differs.
 
 ## Step by step (what the talk shows)
 

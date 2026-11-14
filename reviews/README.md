@@ -50,3 +50,15 @@ Five independent agents reviewed v1. None of them had seen the work being produc
 - **Replace the CODEOWNERS placeholder handles** before showing the file, or keep showing the owner table only.
 - **Sponsor slide**: insert the organizer's slide.
 - **Q&A prep** (from review 2): GL / Schedule P reconciliation, ASOP 23/41/56, NAIC AI bulletin, privacy of `preview.md` sample rows, and "this is not a reserving tool".
+
+# Review round 2 (v2 → v2.1)
+
+- **Cold start from GitHub** (fresh venv, Python 3.13): `make all`, `slidev build` and re-grading all pass. Every grade matches `evals/blind-agent-results.md`.
+- **Final-pass review** (actuary and coach): 8 edits applied.
+  - TP-02: the test partner was found through its `internal` label, not round amounts.
+  - TP-08: the grid is said aloud to be a simulation outside nao.
+  - TP-09: 82.1 per 1,000 is Asia's row.
+  - TP-10: the baseline is about 13 a month (the old "under 20" was wrong; July = 20).
+  - TP-06: the through-line is now said a second time.
+  - The basis now shows excl. LAE and gross earned premium, with AY 2025 fully closed, on slides 2 and 7.
+  - French-speaker wording fixes: "end of September", "To be clear", "badly written tests".
