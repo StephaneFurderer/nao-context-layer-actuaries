@@ -25,6 +25,18 @@ ANN = "context/databases/type=duckdb/database=travel/schema=mart/table=claim_tra
 PROF = "context/databases/type=duckdb/database=travel/schema=mart/table=claim_transactions/profiling.md"
 prof_line = [l for l in read(PROF).splitlines() if '"txn_code"' in l][0]
 
+CLIP = lambda title, q: f"""---
+layout: center
+class: text-center
+---
+
+<div class="text-7xl mb-6">🎙️</div>
+
+# Claire Gouze · CEO, nao Labs
+
+### {q}
+"""
+
 SLIDES = [
     (None, """---
 theme: default
@@ -41,46 +53,45 @@ mdc: true
 
 ## Building the context layer, step by step, with nao
 
-<div class="mt-12 opacity-70">
+<div class="mt-12 opacity-70 text-lg">
 Stéphane Furderer · Actuarial Technology Summit · December 15, 2026<br/>
-<span class="text-sm">All data in this talk is synthetic.</span>
+<span class="text-base">All data in this talk is synthetic.</span>
 </div>
 """),
     ("TP-01", """---
-layout: default
 ---
 
-# "What was our 2025 loss ratio?"
+# "What was our accident-year 2025 loss ratio?"
 
-<img src="/waterfall.svg" class="mx-auto h-88" />
+<img src="/waterfall.svg" class="mx-auto h-96" />
 
-<div class="text-center text-sm opacity-70">Same warehouse, SQL that runs both times. AY 2025, valued 2026-09-30, case incurred (no IBNR).</div>
+<div class="text-center opacity-70">Three rules, nine points. Same data; both queries run. Valued 2026-09-30 · case incurred, no IBNR · synthetic travel insurer</div>
 """),
     ("TP-02", """---
 ---
 
-# The model is not the problem
+# The AI can read your data
 
-<div class="grid grid-cols-2 gap-10 mt-6">
+<div class="grid grid-cols-2 gap-12 mt-8 text-xl">
 <div>
 
-### Inferred from the data ✅
-- code `40` = recovery *(reserves net to 0, recoveries don't)*
-- partner `ZZTEST` = test data *(60 claims at \\$9,999.99)*
-- accident year = year of `loss_date`
+### ✅ It worked out
+- code **40** is a recovery
+- the **test partner** is fake
+- the **accident year** is the loss year
 
 </div>
 <div>
 
-### Conventions it had to guess ❌
-- attritional: **cap** large claims, don't drop them
-- frequency **per 1,000** policies
-- ask before answering an ambiguous question
+### ❓ It had to guess
+- what **attritional** means here
+- where our **large-loss threshold** is
+- how we **quote frequency**
 
 </div>
 </div>
 
-<div class="mt-10 text-xl">A guess that looks right is the dangerous kind: <b>39.3%</b> vs <b>41.6%</b>.</div>
+<div class="mt-14 text-3xl text-center font-bold">It cannot read your decisions.</div>
 """),
     ("TP-03", """---
 layout: two-cols
@@ -88,291 +99,235 @@ layout: two-cols
 
 # A context layer is<br/>the new analyst's binder
 
-- which premium, which year, which partner is fake
+<div class="text-xl mt-6 leading-10">
+
+- which premium, which threshold, which partner is fake
 - written once, in plain words
-- owned by a named actuary
-- **read by the agent before every answer**
-- tested like a model
+- one short **rule sheet**, read every time
+- other pages looked up **when needed**
+- reviewed, versioned, **tested**
+
+</div>
 
 ::right::
 
+<div class="mt-20 text-lg">
+
 ```text
-context/                  # a nao project = a folder
-├── nao_config.yaml       # scope
-├── RULES.md              # router + always-rules
-├── semantics/            # one definition per metric
-│   ├── loss_ratio.md
-│   ├── claim_frequency.md
-│   └── large_and_cat_losses.md
-├── databases/…/table=claims/
-│   ├── columns.md        # nao sync
-│   ├── profiling.md      # nao sync
-│   └── annotations.md    # you
-└── tests/*.yml           # reference answers
+context/              ← a nao project = a folder
+├── RULES.md          ← the rule sheet
+├── semantics/        ← our decisions
+├── databases/…       ← what the data means
+└── tests/            ← the answer key
 ```
-"""),
-    (None, """---
-layout: center
-class: text-center
----
 
-# 🎙️ Claire Gouze, CEO, nao Labs
-
-### Why data teams should become context teams
+</div>
 """),
+    (None, CLIP("A", "Why should data teams become context teams?")),
     ("TP-04", """---
 ---
 
-# The sandbox: a synthetic travel insurer
+# Step 1 · Scope, then sync
 
-| table | rows | grain |
-|---|---:|---|
-| `mart.policies` | 60,000 | policy, 4 partners + 1 test partner |
-| `mart.earned_premium_monthly` | ~159k | policy × accounting month |
-| `mart.claims` | ~4,200 | claim, `loss_date`, `cat_event_code` |
-| `mart.claim_transactions` | ~13,700 | `txn_code` 10 / 20 / 40 |
-| `mart.partners` | 5 | airline, OTA, cruise, direct, *ZZ* |
+<div class="grid grid-cols-3 gap-6 mt-8 text-center text-xl">
+<div class="border-2 rounded-lg p-6"><div class="text-4xl">✅</div><b>In</b><br/>5 clean tables<br/><span class="text-base opacity-70">policies, premium, claims, transactions, partners</span></div>
+<div class="border-2 rounded-lg p-6"><div class="text-4xl">🚫</div><b>Out</b><br/>raw feeds, staging<br/><span class="text-base opacity-70">nao suggests ≤ 20 tables to start</span></div>
+<div class="border-2 rounded-lg p-6"><div class="text-4xl">🔒</div><b>Locked</b><br/>queries outside the 5<br/>are blocked</div>
+</div>
 
-<div class="mt-6">Legacy-style codes · valued <b>2026-09-30</b> · one command: <code>make data</code></div>
+<div class="mt-10 text-xl"><code>nao sync</code> → per table: columns · sample rows · value counts</div>
+<div class="mt-3 text-lg">⚠️ Sample rows go to the model: <b>hide personal columns first.</b></div>
 """),
     ("TP-05", """---
 ---
 
-# Step 1: scope one question
+# Step 2 · Write down what the data means
 
-```yaml
-# context/nao_config.yaml
-project_name: travel-actuarial
-databases:
-  - name: travel_warehouse
-    type: duckdb
-    include: [mart.*]          # gold / mart layer only
-    exclude: [staging.*]       # raw feeds never reach the agent
-    allow_listed_only: true    # SQL outside synced tables is blocked
-    templates: [columns, preview, profiling]
-```
+<div class="text-2xl mt-8 leading-12">
 
-**One question:** accident-year loss ratio. **Five tables.** nao's playbook: start with ≤ 20.
-"""),
-    ("TP-06", f"""---
----
-
-# Step 2: `nao sync`: structure, not meaning
-
-```bash
-$ nao sync
-✓ Sync Complete
-  Databases: 5 tables across 1 datasets
-```
-
-`profiling.md` for `claim_transactions`:
-
-```text
-txn_code · distinct 3 · top values: "20" 8,102 · "10" 4,953 · "40" 666
-```
-
-<div class="text-xl mt-6">What is code <code>40</code>? The machine doesn't say.</div>
-"""),
-    ("TP-07", f"""---
----
-
-# Step 3: annotate the tables
-
-```markdown
-{read(ANN, 7, 16)}
-```
-
-<div class="text-sm opacity-70">Hand-written, never overwritten by sync · owner: reserving actuary (CODEOWNERS)</div>
-"""),
-    ("TP-08", f"""---
----
-
-# Step 4: define each metric once
-
-<div class="grid grid-cols-2 gap-8">
-<div>
-
-### `semantics/loss_ratio.md`
-- **Loss ratio** = net incurred ÷ **earned** premium
-- **Accident year** = `YEAR(loss_date)`, the default basis
-- net incurred = code `10` + `20` − `40`
-- `ZZTEST` out of numerator *and* denominator
-- valued 2026-09-30, **no IBNR**: say so
+| code | means |
+|---|---|
+| `10` | payment |
+| `20` | case reserve change |
+| `40` | **recovery: stored positive, reduces the loss** |
 
 </div>
-<div>
 
-### `semantics/large_and_cat_losses.md`
-*Decisions, not facts*
-- **Large loss** ≥ \\$10,000 (our per-risk retention)
-- **Cat** = any `cat_event_code` (HU25)
-- **Attritional** = cat out, every other claim **capped** at \\$10,000
-- owner: reserving actuary
+<div class="mt-8 text-xl">+ free-look cancellations earn nothing · <code>ZZTEST</code> is test data (fix it upstream when you can)</div>
+<div class="mt-6 text-xl opacity-80">A guess may change tomorrow. Written down, the answer is the same every time.</div>
+"""),
+    ("TP-06", """---
+---
+
+# Step 3 · Write down your decisions
+
+<div class="grid grid-cols-2 gap-10 mt-6 text-lg">
+<div class="border-2 rounded-lg p-5">
+
+### Loss ratio
+incurred **net of recoveries, gross of reinsurance**<br/>÷ **earned** premium<br/>accident year · valued 30 Sep 2026 · **no IBNR**<br/>
+<span class="opacity-70">owner: reserving actuary</span>
+
+</div>
+<div class="border-2 rounded-lg p-5">
+
+### Our conventions
+**large loss** ≥ \\$5,000 (reporting threshold)<br/>**attritional** = hurricane claims out,<br/>every other claim **capped** at \\$5,000<br/>
+<span class="opacity-70">owner: reserving actuary</span>
 
 </div>
 </div>
 
-> "Each metric should have exactly one canonical definition." (nao docs, Rules)
+<div class="mt-10 text-2xl text-center">Cap: <b>38.2%</b> · Drop instead: <b>32.8%</b> · both defensible, only one is ours</div>
 """),
-    ("TP-09", f"""---
+    ("TP-07", """---
 ---
 
-# Step 5: `RULES.md` is a router, not an encyclopedia
+# Step 4 · One short rule sheet
 
-```markdown
-{read('context/RULES.md', 5, 22)}
-```
-"""),
-    (None, """---
-layout: center
-class: text-center
----
+<div class="text-2xl mt-8 leading-12">
 
-# 🎙️ Claire Gouze
-
-### Context, data, model or query: how do you tell?
-"""),
-    ("TP-10", f"""---
----
-
-# Step 6: write the reference answers first
-
-```yaml {{maxHeight:'330px'}}
-# context/tests/attritional_loss_ratio_ay2025.yml
-{read('context/tests/attritional_loss_ratio_ay2025.yml')}
-```
-
-<div class="text-sm">+ <code>ambiguous_loss_ratio.yml</code>: "What's the loss ratio?" passes only if the agent <b>asks a question back</b>.</div>
-"""),
-    ("TP-11", """---
----
-
-# Step 7: run the tests, read the grid
-
-<div class="text-sm">
-
-| reference question | schema only (a) | schema only (b) | + annotations | full context (a) | full context (b) |
-|---|:-:|:-:|:-:|:-:|:-:|
-| loss ratio, by region, by coverage, earned, Caribbean monthly | ✅ | ✅ | ✅ | ✅ | ✅ |
-| large losses (≥ \\$10k) | ✅ *guessed* | ✅ *guessed* | ✅ | ✅ | ✅ |
-| attritional loss ratio | ❌ 39.3% | ❌ 39.3% | ❌ 39.3% | ✅ 41.6% | ✅ 41.6% |
-| frequency by region | ❌ 0.079 | ❌ 0.082 | ❌ 0.082 | ✅ 82.1 ‰ | ✅ 82.1 ‰ |
-| "What's the loss ratio?" → ask | ✅ | ❌ answered | ✅ | ✅ | ✅ |
-| **passed** | **7/9** | **6/9** | **7/9** | **9/9** | **9/9** |
+- 📍 **Where** each definition lives (point to it, don't copy it)
+- 🔁 **Always**: earned premium · no test partner · recoveries reduce losses
+- 📅 **"Today"** means the valuation date, 30 September 2026
+- ❓ **When the question is unclear, ask.**
 
 </div>
 
-<div class="text-xs opacity-60 mt-4">Blind Claude Sonnet analysts, one context level each, graded by evals/grade.py (mimics nao test). Synthetic data, small n. Not a production result.</div>
+<div class="mt-8 text-xl opacity-80">"What's the loss ratio?" → <i>"For which accident year, and all-in or attritional?"</i></div>
 """),
-    ("TP-12", """---
+    ("TP-08", """---
+---
+
+# Step 5 · Write the answer key, then test
+
+<div class="text-base mt-2">
+
+| 9 questions, signed-off answers | tables only | + table notes | + decisions |
+|---|:-:|:-:|:-:|
+| loss ratio, by region, by coverage, earned, monthly | ✅ | ✅ | ✅ |
+| **large losses** (≥ \\$5k) | ❌ \\$10k | ❌ \\$10k | ✅ |
+| **attritional loss ratio** | ❌ 39.1% | ❌ 39.1% | ✅ 38.2% |
+| frequency (per 1,000) | ⚠️ per policy | ⚠️ per policy | ✅ |
+| "What's the loss ratio?" → ask | ✅ / ❌ | ✅ | ✅ |
+| **passed** (two runs each) | **6 · 5** | **6 · 6** | **9 · 9** |
+
+</div>
+
+<div class="text-xs opacity-60 mt-1">Blind Claude Sonnet analysts, one context level each, graded at 4 decimals by evals/grade.py (mimics nao test). Synthetic data, small n, presenter's own grader. Not a production result.</div>
+"""),
+    (None, CLIP("B", "When an answer is wrong: is it the context, the data, the model or the query?")),
+    ("TP-09", """---
 ---
 
 # Diagnose before you fix
 
-<div class="grid grid-cols-4 gap-4 mt-8 text-center">
-<div class="border rounded p-4"><h3>Context</h3><p class="text-sm">missing or ambiguous definition</p><p class="text-xs opacity-70">frequency "per 1,000"</p></div>
-<div class="border rounded p-4"><h3>Data</h3><p class="text-sm">wrong or late data, bad model</p></div>
-<div class="border rounded p-4"><h3>Query</h3><p class="text-sm">right definition, wrong SQL</p></div>
-<div class="border rounded p-4 border-blue-500"><h3>Test</h3><p class="text-sm">the reference was ambiguous</p><p class="text-xs opacity-70">month as int vs date → fixed the test</p></div>
+<div class="grid grid-cols-4 gap-5 mt-10 text-center text-xl">
+<div class="border-2 rounded-lg p-5"><b>Context</b><p class="text-base">a missing or unclear definition</p></div>
+<div class="border-2 rounded-lg p-5"><b>Data</b><p class="text-base">wrong, late or badly modelled tables</p></div>
+<div class="border-2 rounded-lg p-5"><b>Query</b><p class="text-base">right definition, wrong SQL</p></div>
+<div class="border-2 rounded-lg p-5 border-blue-500"><b>Test</b><p class="text-base">a vague question or answer key</p></div>
 </div>
 
-<div class="mt-10">Claire's own study: part of the 45% → 86% gain came from <b>fixing ambiguous tests</b>.</div>
+<div class="mt-10 text-xl">0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
+<div class="mt-3 text-lg opacity-80">Claire's study: most of the gain came from the data model; fixing tests mattered, but less.</div>
 """),
-    ("TP-13", """---
+    ("TP-10", """---
 ---
 
-# The investigation: all-in 49.9%, attritional 41.6%
+# All-in 49.4% · attritional 38.2%: what's in the gap?
 
 <div class="grid grid-cols-2 gap-4 mt-2">
-<img src="/region.svg" class="h-72 mx-auto" />
-<img src="/caribbean_monthly.svg" class="h-72 mx-auto" />
+<img src="/region.svg" class="h-76 mx-auto" />
+<img src="/caribbean_monthly.svg" class="h-76 mx-auto" />
 </div>
 
-<div class="mt-4">Caribbean AY 2025: <b>95.7%</b> · trip-cancellation claims ~20 / month → <b>100</b> in August · tagged <code>HU25</code></div>
+<div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: under 20/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
 """),
-    ("TP-14", """---
+    ("TP-11", """---
 ---
 
 # Judgement stays with the actuary
 
-<div class="grid grid-cols-2 gap-10 mt-8 text-lg">
+<div class="grid grid-cols-2 gap-12 mt-10 text-2xl">
 <div>
 
-### Found by the agent
+### 🔎 Found by the agent
 - the spike, the region, the months
-- every query, visible
-- minutes, not weeks
+- every query visible
+- in minutes
 
 </div>
 <div>
 
-### Decided by you
-- one-off cat, or a trend to price?
-- load for it? revisit the cruise partner?
-- **then write the decision into the context**
+### ✍️ Decided by you
+- a one-off cat, or a trend to price?
+- revisit the cruise partner?
+- **then write the decision down**
 
 </div>
 </div>
 """),
-    ("TP-15", """---
+    ("TP-12", """---
 ---
 
-# Close the loop: corrections become pull requests
+# Corrections become reviewed changes
 
-```mermaid {scale: 0.62}
-flowchart LR
-  A[Correction<br/>or downvote] --> B[Recommendations<br/>audit]
-  B --> C[Ranked card<br/>+ drafted patch]
-  C --> D[Pull request]
-  D --> E[Actuary review]
-  E --> F[Merge +<br/>new test]
-```
+<div class="grid grid-cols-4 gap-4 mt-14 text-center text-xl">
+<div class="border-2 rounded-lg p-5">👎<br/><b>Correction</b><br/><span class="text-base">a user downvotes or fixes an answer</span></div>
+<div class="border-2 rounded-lg p-5">📋<br/><b>Suggestion</b><br/><span class="text-base">nao ranks the gap and shows the chats behind it</span></div>
+<div class="border-2 rounded-lg p-5">✅<br/><b>Reviewed change</b><br/><span class="text-base">a pull request the owner approves</span></div>
+<div class="border-2 rounded-lg p-5">🧪<br/><b>New test</b><br/><span class="text-base">so it never comes back</span></div>
+</div>
 
-<div class="mt-6">"YOLO mode" auto-opens PRs. For actuarial definitions: <b>off</b>.</div>
+<div class="mt-10 text-xl">Automatic mode opens the changes without review. <b>For actuarial definitions: off.</b></div>
 """),
-    ("TP-16", f"""---
+    ("TP-13", """---
 ---
 
 # Ownership is the real deliverable
 
-```text
-{read('CODEOWNERS')}
-```
+<div class="text-xl mt-6">
 
-<div class="mt-4">Every pull request reruns the reference questions: <code>.github/workflows/context-tests.yml</code></div>
+| what the AI reads | owner | check |
+|---|---|---|
+| loss ratio, large & cat losses | reserving actuary | answer key, every change |
+| claim frequency | pricing actuary | answer key, every change |
+| table notes | reserving + data engineering | answer key, every change |
+| the whole agent | analytics lead | full agent test, on a schedule |
+
+</div>
+
+<div class="mt-8 text-xl opacity-80">We already govern reserving models this way (ASOP 56). Do the same for the words the AI reads.</div>
 """),
-    (None, """---
-layout: center
-class: text-center
----
-
-# 🎙️ Claire Gouze
-
-### Who owns the context, and how do you know it's getting better?
-"""),
-    ("TP-17", """---
+    (None, CLIP("C", "Who should own the context, and how do you know it's getting better?")),
+    ("TP-14", """---
 ---
 
 # Monday morning
 
-1. **One bounded question** your team argues about
-2. **Write what it means**, in plain words, with an owner
-3. **Write the reference answer**: the SQL you would sign
-4. **Test the agent** against it, before anyone else uses it
+<div class="text-3xl mt-10 leading-16">
 
-<div class="mt-10 opacity-80">nao suggests 20 tables and 20 questions. Start with one, and earn the next nineteen.</div>
+1. **One question** your team argues about
+2. **Write it down**: meaning + decisions + owner
+3. **Write the answer key**: the SQL you would sign
+4. **Test the agent** before anyone else uses it
+
+</div>
+
+<div class="mt-8 text-xl opacity-80">Start with one question, and earn the next nineteen.</div>
 """),
-    ("TP-18", """---
+    ("TP-15", """---
 layout: center
 class: text-center
 ---
 
 # The model is fast.<br/>Your definitions make it right.
 
-<div class="mt-10 text-xl"><code>github.com/StephaneFurderer/nao-context-layer-actuaries</code></div>
-<div class="mt-2 opacity-70">Synthetic data · rerun it · break it · tell me what you find</div>
+<img src="/qr.svg" class="mx-auto h-40 mt-8" />
 
-<div class="mt-8 text-sm opacity-60">Sponsor acknowledgement slide: supplied by the organizer</div>
+<div class="mt-4 text-xl"><code>github.com/StephaneFurderer/nao-context-layer-actuaries</code></div>
+<div class="mt-2 opacity-70">Synthetic data · run it · break it · tell me what you find</div>
 """),
 ]
 

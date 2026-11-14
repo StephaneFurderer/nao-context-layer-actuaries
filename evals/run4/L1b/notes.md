@@ -1,0 +1,9 @@
+- ambiguous_loss_ratio: no context rules defined (semantics/, RULES.md empty); period/basis unspecified so I ask for clarification.
+- loss_ratio_ay2025: net incurred (txn 10 + 20 - 40, as of 2026-09-30, per claims annotations) for claims with loss_date in 2025, incl. cat, / earned premium with accounting_month in 2025 (calendar-year earned used as AY denominator; inferred). ZZTEST excluded (documented).
+- attritional_loss_ratio_ay2025: AY2025 incurred excluding cat claims (cat_event_code not null) and large losses, over total 2025 earned premium; large threshold inferred (see below).
+- large_loss_count_ay2025: large loss = claim net incurred >= 10000 USD, AY2025 (threshold NOT defined anywhere; semantics/large_and_cat_losses.md missing; inferred ~p99.9 round figure).
+- caribbean_cancellation_claims_by_month_2025: claims with coverage trip_cancellation, policy destination Caribbean, loss_date in 2025 grouped by loss month; denied claims counted (documented), ZZTEST excluded; includes cat claims.
+- claim_frequency_by_region_2025: claims count / policies with departure_date in 2025, excluding CX (free-look, documented) and ZZTEST; policy-count denominator (not exposure-years), inferred; claims linked to those policies regardless of loss year.
+- earned_premium_2026_ytd: sum earned_premium_usd accounting_month 2026-01..2026-09 (valuation 2026-09-30), ZZTEST excluded.
+- loss_ratio_by_region_ay2025: as loss_ratio_ay2025 grouped by policy destination_region on both numerator and denominator.
+- net_incurred_by_coverage_ay2025: net incurred (10+20-40) by coverage for loss_date in 2025, ZZTEST excluded, cat and large included; inferred "net" = net of recoveries.

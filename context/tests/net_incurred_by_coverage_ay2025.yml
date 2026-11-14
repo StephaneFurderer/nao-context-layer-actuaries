@@ -2,7 +2,7 @@ name: net_incurred_by_coverage_ay2025
 prompt: What are net incurred losses by coverage for accident year 2025?
 sql: |
   SELECT c.coverage,
-         SUM(CASE t.txn_code WHEN '40' THEN -t.amount_usd ELSE t.amount_usd END) AS net_incurred_usd
+         SUM(CASE t.txn_code WHEN '40' THEN -t.amount_usd ELSE t.amount_usd END) AS net_incurred_usd_dollars
   FROM mart.claim_transactions t
   JOIN mart.claims c   USING (claim_id)
   JOIN mart.policies p USING (policy_id)

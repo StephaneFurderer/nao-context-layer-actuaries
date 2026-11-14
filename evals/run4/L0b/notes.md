@@ -1,0 +1,10 @@
+- General (inferred): no semantic layer. Excluded partner ZZTEST (internal test, inferred). Accident year = year(loss_date). Txn codes inferred: 10=paid, 20=case reserve movement (open claims carry outstanding; closed net to 0), 40=recovery (positive, only non-medical closed_paid claims, ~37% of paid) so net incurred = 10+20-40; gross incurred = 10+20. Loss ratio = net incurred / calendar-year earned premium (accounting_month), no LAE.
+- ambiguous_loss_ratio: chose ANSWER (AY2025 net loss ratio, all-in) rather than clarify; assumption inferred.
+- attritional_loss_ratio_ay2025: AY2025 net incurred excluding cat claims (cat_event_code not null, HU25) and large losses (gross incurred >=10,000), over 2025 EP; thresholds inferred (9999.99 appears to be a cap cluster).
+- caribbean_cancellation_claims_by_month_2025: claims count (all statuses incl. denied) by loss month, coverage trip_cancellation, policy destination_region Caribbean; zero-filled months.
+- claim_frequency_by_region_2025: claims (all statuses) / policies, for policies departing in 2025, excluding cancelled (CX) policies as never travelled (inferred); by destination_region.
+- earned_premium_2026_ytd: sum earned_premium_usd with accounting_month in 2026 (data runs to Sep 2026), ex ZZTEST.
+- large_loss_count_ay2025: gross incurred >=10,000 per claim (threshold inferred), AY2025.
+- loss_ratio_ay2025: see general; net incurred AY2025 / 2025 earned premium.
+- loss_ratio_by_region_ay2025: same by policy destination_region.
+- net_incurred_by_coverage_ay2025: net incurred (paid + reserve - recoveries) by coverage, AY2025.

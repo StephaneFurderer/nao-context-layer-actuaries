@@ -26,3 +26,15 @@ databases:
     interval_days: 7
   path: ../warehouse/travel.duckdb
 repos: []
+# LLM for `nao chat` / `nao test`: export ANTHROPIC_API_KEY, then uncomment (docs: context-builder/configuration).
+# llm:
+#   providers:
+#     - provider: anthropic
+#       api_key: {{ env('ANTHROPIC_API_KEY') }}
+
+# nao test defaults (docs: nao-agent/context-engineering/evaluation). Ratios need 4 decimals, not the default 2.
+test:
+  models: [anthropic:claude-sonnet-4-5]   # nao test default is openai:gpt-4.1
+  k: 3                                    # pass^k: run each question 3 times
+  comparison:
+    decimals: 4                           # ratios need 4 decimals; the default 2 lets 0.495 = 0.499

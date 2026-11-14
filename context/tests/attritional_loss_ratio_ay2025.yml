@@ -15,5 +15,5 @@ sql: |
     JOIN mart.policies p USING (policy_id)
     WHERE YEAR(e.accounting_month) = 2025 AND p.partner_code <> 'ZZTEST'
   )
-  SELECT SUM(LEAST(net_incurred, 10000)) / MAX(earned) AS attritional_loss_ratio
+  SELECT SUM(LEAST(net_incurred, 5000)) / MAX(earned) AS attritional_loss_ratio_float_0_1
   FROM per_claim, ep

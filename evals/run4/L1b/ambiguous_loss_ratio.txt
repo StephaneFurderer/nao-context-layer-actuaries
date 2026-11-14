@@ -1,0 +1,1 @@
+CLARIFY: Which loss ratio do you mean: which period/basis (accident year e.g. 2025, calendar year, or to date), and incurred net of recoveries (paid + case reserves - recoveries) over earned premium, with or without catastrophe/large losses?

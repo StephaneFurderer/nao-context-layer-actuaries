@@ -1,0 +1,4 @@
+WITH inc AS (SELECT c.claim_id, c.coverage, c.cat_event_code, c.loss_date, p.destination_region, SUM(CASE t.txn_code WHEN '10' THEN t.amount_usd WHEN '20' THEN t.amount_usd WHEN '40' THEN -t.amount_usd END) AS incurred FROM mart.claims c JOIN mart.policies p USING(policy_id) JOIN mart.claim_transactions t USING(claim_id) WHERE p.partner_code <> 'ZZTEST' AND c.loss_date >= DATE '2025-01-01' AND c.loss_date < DATE '2026-01-01' GROUP BY ALL),
+l AS (SELECT destination_region, SUM(incurred) AS inc FROM inc GROUP BY 1),
+ep AS (SELECT p.destination_region, SUM(e.earned_premium_usd) AS prem FROM mart.earned_premium_monthly e JOIN mart.policies p USING(policy_id) WHERE p.partner_code <> 'ZZTEST' AND e.accounting_month >= DATE '2025-01-01' AND e.accounting_month < DATE '2026-01-01' GROUP BY 1)
+SELECT ep.destination_region, COALESCE(l.inc,0) / ep.prem AS loss_ratio FROM ep LEFT JOIN l USING(destination_region) ORDER BY 1;

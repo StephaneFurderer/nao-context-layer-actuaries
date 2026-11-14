@@ -10,8 +10,8 @@ It walks a synthetic travel insurer through building a context layer for an AI a
 
 ```
 "What was our 2025 loss ratio?"
-  naive SQL (written premium, gross of recoveries, test data in)  → 58.9 %
-  + earned premium   + subtract recoveries   + drop test partner  → 49.9 %   ← reference
+  naive SQL (written premium, gross of recoveries, test data in)  → 58.1 %
+  + earned premium   + subtract recoveries   + drop test partner  → 49.4 %   ← reference
 ```
 Three sentences any actuary knows move the answer by nine points. The context layer is where those sentences live, written once, owned, and tested.
 
@@ -29,47 +29,56 @@ Three sentences any actuary knows move the answer by nine points. The context la
 | `context/tests/*.yml` | Step 6: reference answers (`nao test` format) |
 | `evals/` | Grader plus the blind-agent experiment (context levels L0/L1/L2) |
 | `sql/` | Evidence queries (naive vs. reference, waterfall) |
-| `talk/talking-points.md` | 18 talking points, each ≤ 60 s, checked by `talk/check_talk.py` |
+| `talk/talking-points.md` | 15 talking points, each ≤ 60 s at 120 wpm (numbers counted as spoken), total ≤ 12 min, checked by `talk/check_talk.py` |
+| `reviews/` | The independent reviews (nao-skills audit, senior actuary, talk coach, nao fact-check, cold start) and what changed |
 | `slides/` | Slidev deck |
 | `sources/source-bank.md` | Every source, quote and TL;DR used |
 | `CODEOWNERS`, `.github/workflows/` | Ownership and CI: who approves context changes, tests on every PR |
 
 ## Run it
 
+Requirements: **Python ≥ 3.11**, Node ≥ 18 (deck only). On a Mac: Apple silicon needs **macOS 15+** for the nao-core 0.4.2 wheel, and the Xcode `python3` (3.9) is too old, so use `brew install python@3.12` or `uv`.
+
 ```bash
-pip install -r requirements.txt      # nao-core 0.4.2, duckdb<2
-make all                             # data → nao sync → reference SQL → talk timing check
-make slides                          # build the deck (Node 18+)
-cd slides && npm install && npx slidev   # present at localhost:3030
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt      # nao-core[duckdb,anthropic]==0.4.2, duckdb<2
+make all                             # data → nao sync → assert every quoted number → talk timing check
+make slides                          # build the deck
+cd slides && npx slidev              # present at http://localhost:3030 (speaker notes = talking points)
 ```
 
-With an LLM key (needed for the real nao agent):
+**Run the real nao agent** (needs an LLM key and a nao login):
 
 ```bash
+export ANTHROPIC_API_KEY=...         # then uncomment the llm: block in context/nao_config.yaml
 cd context
-# add an llm: block to nao_config.yaml (see docs.getnao.io/nao-agent/context-builder/configuration)
-nao chat                             # chat UI at http://localhost:5005
-nao test -k 3                        # run the 9 reference questions, 3 times each (pass^k)
+nao debug                            # should show the DuckDB connection + the LLM
+nao chat                             # chat UI at http://localhost:5005 (first run: create a local account)
+# in a second terminal, same folder:
+nao test -k 3                        # 9 reference questions, 3 runs each (pass^k); browser login on first run
 nao test server                      # results UI at http://localhost:8765
 ```
 
+Don't run `make data` while `nao chat` is open: both open the DuckDB file.
+
 ## Step by step (what the talk shows)
 
-1. **Scope**: one bounded question (accident-year loss ratio), five mart tables, staging excluded, `allow_listed_only: true`.
-2. **Sync**: `nao sync` writes columns, preview and profiling per table. This gives the agent structure, not meaning.
-3. **Annotate**: per-table `annotations.md`: grain, codes (`10` payment, `20` reserve change, `40` recovery), pitfalls.
-4. **Define once**: `semantics/loss_ratio.md`, `claim_frequency.md`, `large_and_cat_losses.md`. This is where the company conventions live.
-5. **Route**: `RULES.md` stays short. It routes to definitions, states the always-rules, and says when to ask.
-6. **Reference answers**: nine YAML tests, including one that must trigger a clarifying question.
-7. **Test and diagnose**: `nao test`; label each failure as context, data, query or test before fixing.
-8. **Keep it true**: nao Recommendations, then a PR, a CODEOWNERS review and CI tests.
+1. **Scope, then sync**: one bounded question, five mart tables, staging excluded, `allow_listed_only: true`. Then `nao sync`.
+2. **What the data means**: per-table `annotations.md` with grain, codes (`10` payment, `20` reserve change, `40` recovery) and pitfalls.
+3. **Our decisions**: `semantics/*.md`, one prose definition per metric, plus company conventions ($5k large loss, capped attritional).
+4. **Rule sheet**: a short `RULES.md` that points to the definitions, states the always-rules, and says when to ask.
+5. **Answer key, then test**: nine YAML tests (one must trigger a clarifying question), then `nao test`. Diagnose each failure as context, data, query or test.
+
+Then keep it true: nao Recommendations → reviewed PR (CODEOWNERS) → new test. CI re-checks the answer key on every change.
 
 ## Results of the blind-agent experiment
 
-See [`evals/blind-agent-results.md`](evals/blind-agent-results.md). Short version: with schema only, Claude Sonnet analysts passed 6–7 of 9; with the full context layer, 9 of 9 on both runs. They *inferred* most rules from evidence in the data. They missed the **conventions**: capping vs. dropping large claims, frequency per 1,000, and asking before answering an ambiguous question.
+See [`evals/blind-agent-results.md`](evals/blind-agent-results.md). Short version (run 4): Claude Sonnet analysts passed 5–6 of 9 with tables only and 6 of 9 with table notes. With our written decisions they passed 9 of 9 on both runs. They *inferred* the data rules from evidence in the data. They never inferred the **decisions**: the $5k large-loss threshold (all guessed $10k) and capping vs. dropping large claims in attritional.
 
 ## Known limits
 
-- Synthetic data, one seed, small question set, n = 2 runs per level at most.
+- Synthetic data, one seed, small question set, n = 2 runs per level. The Caribbean hurricane pattern is planted.
+- Case-incurred only: AY 2024–25 are fully closed in this data, so the demo does not exercise reserving or IBNR.
+- `nao sync` writes sample rows (`preview.md`) that are sent to the LLM and committed to git. On real claims data, use `exclude_columns` for personal and health fields.
 - The grader imitates the `nao test` comparison but is not nao. The real `nao test` needs `nao chat` running and an LLM key.
 - Loss ratios exclude IBNR (case-incurred only). That is stated in `semantics/loss_ratio.md` and on the slides.

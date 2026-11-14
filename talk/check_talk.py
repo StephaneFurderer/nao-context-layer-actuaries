@@ -15,9 +15,25 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WPM = 130          # deliberately slow: conference pace, second-language speaker, live demo
+WPM = 120          # deliberately slow: second-language speaker, prerecorded with on-screen moments
+MAX_TOTAL_MIN = 12.0  # the demo segment's budget, excluding interview clips
 MAX_SECONDS = 60
 TP = re.compile(r"^### (TP-\d+)\s*[—-]\s*(.+)$", re.M)
+
+
+def spoken_words(text: str) -> int:
+    """Count words as they are SAID: '49.4%' is 'forty-nine point four percent' (5), '$5,000' is 'five thousand dollars' (3)."""
+    n = 0
+    for tok in re.findall(r"[\w'’%.,$-]+", text):
+        t = tok.strip(".,")
+        if re.search(r"\d", t):
+            digits = re.sub(r"[^\d.]", "", t)
+            whole, _, frac = digits.partition(".")
+            n += max(1, min(len(whole.lstrip("0") or "0"), 3)) + (1 + len(frac) if frac else 0)
+            n += ("%" in t) + ("$" in t)
+        elif t:
+            n += 1
+    return n
 
 
 def field(block: str, name: str) -> str:
@@ -35,7 +51,7 @@ def main() -> int:
         block = text[h.end(): heads[i + 1].start() if i + 1 < len(heads) else len(text)]
         tid, title = h.group(1), h.group(2).strip()
         say = re.sub(r"[>*_`]", "", field(block, "Say"))
-        words = len(re.findall(r"[\w'’%.$-]+", say))
+        words = spoken_words(say)
         demo = field(block, "Demo")
         demo_s = int(re.search(r"(\d+)\s*s", demo).group(1)) if re.search(r"(\d+)\s*s", demo) else 0
         secs = words / WPM * 60 + demo_s
@@ -66,6 +82,8 @@ def main() -> int:
     clip_min = sum(int(m) for _, m in clips)
     print(f"\n{len(rows)} talking points, {total/60:.1f} min spoken/demo + {clip_min} min interview clips "
           f"= {total/60 + clip_min:.1f} min (at {WPM} wpm)")
+    if total / 60 > MAX_TOTAL_MIN:
+        errors.append(f"segment total {total/60:.1f} min > budget {MAX_TOTAL_MIN} min")
     if errors:
         print("\nFAILED:\n  " + "\n  ".join(errors))
         return 1

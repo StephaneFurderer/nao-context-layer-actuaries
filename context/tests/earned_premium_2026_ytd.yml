@@ -1,7 +1,7 @@
 name: earned_premium_2026_ytd
 prompt: How much premium have we earned in 2026 so far?
 sql: |
-  SELECT SUM(e.earned_premium_usd) AS earned_premium_usd
+  SELECT SUM(e.earned_premium_usd) AS earned_premium_usd_dollars
   FROM mart.earned_premium_monthly e
   JOIN mart.policies p USING (policy_id)
   WHERE YEAR(e.accounting_month) = 2026 AND p.partner_code <> 'ZZTEST'

@@ -1,0 +1,1 @@
+CLARIFY: Which period (e.g. accident year 2025, 2026 YTD, or all years) and which basis (accident, report or underwriting year) do you want the loss ratio for?

@@ -16,5 +16,5 @@ sql: |
     WHERE YEAR(e.accounting_month) = 2025 AND p.partner_code <> 'ZZTEST'
     GROUP BY 1
   )
-  SELECT destination_region, net_incurred / earned AS loss_ratio
+  SELECT destination_region, net_incurred / earned AS loss_ratio_float_0_1
   FROM inc JOIN ep USING (destination_region)

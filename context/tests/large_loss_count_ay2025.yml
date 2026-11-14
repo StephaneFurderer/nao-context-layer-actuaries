@@ -10,4 +10,4 @@ sql: |
     WHERE YEAR(c.loss_date) = 2025 AND p.partner_code <> 'ZZTEST'
     GROUP BY 1
   )
-  SELECT COUNT(*) AS large_losses FROM per_claim WHERE net_incurred >= 10000
+  SELECT COUNT(*) AS large_loss_count FROM per_claim WHERE net_incurred >= 5000

@@ -1,0 +1,1 @@
+CLARIFY: Which loss ratio do you mean: which accident year or period, incurred (paid + case reserves, net of recoveries) over earned premium or paid over earned, and should cat events (HU25) and large losses be included?

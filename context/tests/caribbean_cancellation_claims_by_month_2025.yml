@@ -1,7 +1,7 @@
 name: caribbean_cancellation_claims_by_month_2025
-prompt: How many Caribbean trip cancellation claims did we have each month of 2025, by loss month? Return the month as a date (first day of the month).
+prompt: How many Caribbean trip cancellation claims did we have each month of 2025, by loss month?
 sql: |
-  SELECT DATE_TRUNC('month', c.loss_date) AS loss_month, COUNT(*) AS claims
+  SELECT CAST(DATE_TRUNC('month', c.loss_date) AS DATE) AS loss_month_date_yyyy_mm_dd, COUNT(*) AS claim_count
   FROM mart.claims c
   JOIN mart.policies p USING (policy_id)
   WHERE p.destination_region = 'Caribbean'
@@ -9,3 +9,4 @@ sql: |
     AND YEAR(c.loss_date) = 2025
     AND p.partner_code <> 'ZZTEST'
   GROUP BY 1
+  ORDER BY 1

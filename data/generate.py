@@ -155,6 +155,9 @@ def claims(rng, pol: pd.DataFrame):
     u = rng.random(len(c))
     tc = (cov == "trip_cancellation")
     loss = pd.DatetimeIndex(np.where(tc, (pur + (dep - pur) * u).to_numpy(), (dep + (ret - dep) * u).to_numpy())).normalize()
+    # hurricane cancellations happen when the storm is forecast: 0-10 days before departure (not uniformly since purchase)
+    storm = (dep - pd.to_timedelta(rng.integers(0, 11, len(c)), "D")).to_numpy()
+    loss = pd.DatetimeIndex(np.where(is_cat, np.maximum(storm, pur.to_numpy()), loss.to_numpy())).normalize()
     report = loss + pd.to_timedelta(rng.gamma(1.5, 9, len(c)).astype(int), "D")
 
     sev = np.array([COVERAGES[k][1] * rng.lognormal(-COVERAGES[k][2] ** 2 / 2, COVERAGES[k][2]) for k in cov])

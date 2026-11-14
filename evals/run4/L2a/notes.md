@@ -1,0 +1,9 @@
+- ambiguous_loss_ratio: period and year basis missing, RULES.md says ask one short question -> CLARIFY (from RULES.md).
+- attritional_loss_ratio_ay2025: non-cat claims only, each claim's incurred capped at 5000 (LEAST), / AY2025 earned premium; ZZTEST excluded; documented definition. Only attritional returned (all-in is 0.4941).
+- caribbean_cancellation_claims_by_month_2025: coverage=trip_cancellation, policy destination_region=Caribbean, month of loss_date in 2025, includes cat/denied claims, ZZTEST excluded; all 12 months shown (zero-filled). Inferred: counts include denied/cat.
+- claim_frequency_by_region_2025: claims per 1000 policies, departure year 2025, excl CX and ZZTEST, denied counted, rounded to 1dp; documented. Maturity: trips departing late Dec 2025 have returned by 2026-09-30.
+- earned_premium_2026_ytd: SUM earned_premium_usd with accounting_month >= 2026-01-01 (valuation 2026-09-30), ZZTEST excluded; documented.
+- large_loss_count_ay2025: claims with AY2025 incurred (10+20-40) >= 5000, ZZTEST excluded; documented.
+- loss_ratio_ay2025: AY2025 incurred (10+20-40, gross of reinsurance, no IBNR/LAE) / 2025 accounting-month earned premium, ZZTEST excluded; documented.
+- loss_ratio_by_region_ay2025: same as above segmented by policies.destination_region on both numerator and denominator; documented.
+- net_incurred_by_coverage_ay2025: AY2025 net incurred (10+20-40) by claims.coverage, ZZTEST excluded; documented.

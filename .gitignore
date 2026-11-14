@@ -6,3 +6,5 @@ slides/.slidev/
 context/tests/outputs/
 __pycache__/
 .DS_Store
+evals/last_grade.json
+results.json

@@ -8,7 +8,7 @@ sql: |
       AND policy_status <> 'CX'
   )
   SELECT pol.destination_region,
-         ROUND(1000.0 * COUNT(DISTINCT c.claim_id) / COUNT(DISTINCT pol.policy_id), 1) AS claims_per_1000
+         ROUND(1000.0 * COUNT(DISTINCT c.claim_id) / COUNT(DISTINCT pol.policy_id), 1) AS claim_frequency
   FROM pol
   LEFT JOIN mart.claims c USING (policy_id)
   GROUP BY 1

@@ -1,0 +1,11 @@
+- all: excluded partner ZZTEST (internal test partner; 613 policies) from numerators and denominators (inferred from name/channel=internal).
+- net incurred: txn_code 10 = payments, 20 = case reserve (set/released, sums to outstanding on open claims), 40 = recovery (subrogation/salvage; positive, only non-medical, post-payment). Net incurred = 10 + 20 - 40 (inferred; codes undocumented). Denied claims net to 0.
+- net_incurred_by_coverage_ay2025: AY = year(loss_date)=2025, all transactions to date (valuation 2026-09-30), by claims.coverage.
+- loss_ratio_ay2025: AY2025 net incurred (incl. cat HU25) / earned premium with accounting_month in 2025 (inferred; calendar-year EP as proxy for AY EP).
+- attritional_loss_ratio_ay2025: as above excluding cat claims (cat_event_code not null) and large losses; large = gross incurred (paid+reserve, before recoveries) >= $10,000 (inferred; data shows 9999.99 cap and a gap above it); same EP denominator.
+- large_loss_count_ay2025: AY2025 claims with gross incurred >= 10,000 (inferred threshold); excludes ZZTEST.
+- loss_ratio_by_region_ay2025: region = policies.destination_region for both numerator and EP; same definitions as loss_ratio_ay2025.
+- earned_premium_2026_ytd: sum earned_premium_monthly for accounting_month in 2026 (data ends Sep 2026).
+- caribbean_cancellation_claims_by_month_2025: count of all claims (incl. denied) coverage=trip_cancellation, policy destination Caribbean, by month of loss_date 2025, zero months filled (HU25 cat claims included).
+- claim_frequency_by_region_2025: claims (any status) / policies with departure_date in 2025, excluding cancelled (CX, no exposure, zero earned premium); frequency per policy as a decimal (inferred).
+- ambiguous_loss_ratio: CLARIFY (period, basis, cat/large treatment undefined).

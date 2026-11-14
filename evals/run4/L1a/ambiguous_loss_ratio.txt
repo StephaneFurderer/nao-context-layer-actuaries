@@ -1,0 +1,1 @@
+CLARIFY: Which basis do you want: accident-year (and which year) or calendar/all-time, net of recoveries, and should cat and large losses be included (all-in vs attritional)?

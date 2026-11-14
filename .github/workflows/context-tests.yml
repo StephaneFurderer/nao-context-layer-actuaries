@@ -1,12 +1,20 @@
 name: context-tests
+# Every change to the context, the data or the talk re-checks the answer key:
+# regenerate the warehouse, nao sync, run every reference SQL, assert every number quoted in the talk,
+# and check every talking point is <= 60 s.
+#
+# The agent test (`nao test`) is NOT run here. It needs a running `nao chat`, a nao login and an
+# LLM key. Run it on a schedule from a machine that has those (see README "Run the real nao agent"),
+# or wire it to a hosted nao instance with an org API key (NAO_API_KEY) created in that instance.
 on:
   pull_request:
-    paths: ["context/**", "data/**", "evals/**", "talk/**"]
+    paths: ["context/**", "data/**", "evals/**", "sql/**", "talk/**"]
+  push:
+    branches: [main]
   schedule:
     - cron: "17 6 * * 1"   # weekly, as the nao playbook suggests
 jobs:
-  offline:
-    # Always runs: data regenerates, reference SQL executes, talk timing holds.
+  answer-key:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,17 +22,3 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - run: make data context check-sql talk
-  agent:
-    # Runs nao test against the real agent. Needs secrets; skipped when absent.
-    runs-on: ubuntu-latest
-    needs: offline
-    if: ${{ vars.NAO_AGENT_TESTS == 'true' }}
-    env:
-      NAO_API_KEY: ${{ secrets.NAO_API_KEY }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install -r requirements.txt && make data context
-      - run: cd context && (nao chat &) && sleep 20 && nao test -k 3

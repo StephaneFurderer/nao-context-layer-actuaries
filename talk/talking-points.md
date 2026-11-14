@@ -1,165 +1,147 @@
-# Talking points: Building the context layer (demo segment)
+# Talking points: Building the context layer (demo segment, v2)
 
-Session: *From Actuarial Knowledge to Trusted AI Analytics: Building the Context Layer*, Actuarial Technology Summit, December 15, 2026.
+Session: *From Actuarial Knowledge to Trusted AI Analytics: Building the Context Layer*. Actuarial Technology Summit, December 15, 2026, prerecorded.
 
-Each point is ≤ 60 seconds. `python talk/check_talk.py` enforces this at 130 wpm, adding the stated demo time. Every number traces to a file in this repo; every outside claim traces to `sources/source-bank.md`.
+Each point fits in 60 seconds or less. `python3 talk/check_talk.py` enforces this, counting numbers as they are spoken, at 120 wpm, plus any stated demo time. The segment budget is 12 minutes, excluding the interview clips. Every number is asserted by `make check-sql`; every outside claim traces to `sources/source-bank.md`.
 
-Field legend:
-- **Doing**: what the audience should understand we are doing
+Fields:
+- **Doing**: what the audience should understand
 - **Say**: the script
-- **Show**: slide or screen
-- **Demo**: seconds of silent screen time
+- **Show**: what is on screen
+- **Demo**: seconds of screen time without speech
 - **Proof**: repo evidence
 - **Sources**: source-bank ids
 
-The interview clips with Claire Gouze slot in where marked. The clip timings are placeholders: cut them from the 20-minute recording.
+The through-line, said at TP-02 and TP-06: *"The AI can read your data. It cannot read your decisions."*
+The closing line, said aloud at TP-15: *"The model is fast. Your definitions make it right."*
+
+v2 changes after the review round are listed in `reviews/README.md`.
 
 ---
 
-## Act 1: Why the context layer
+## Act 1: Why
 
 ### TP-01 — Same question, two answers
 **Doing:** Open with one actuarial question whose two runnable answers differ by nine points.
-**Say:** What was our 2025 loss ratio? I asked that of a synthetic travel insurer I built for this talk, and I got two answers. 58.9 percent, and 49.9 percent. Both come from SQL that runs. Both look reasonable on a slide. The gap is three sentences that every actuary in this room knows: use earned premium, subtract recoveries, ignore the test partner. Today is about where those three sentences live, and how an AI analyst finds them before it answers.
-**Show:** Slide 2: the waterfall from 58.9% to 49.9%.
-**Proof:** `sql/waterfall_2025.sql`, `sql/reference_loss_ratio_2025.sql`
+**Say:** What was our accident-year 2025 loss ratio? Here are two answers from the same data. Fifty-eight point one percent. And forty-nine point four. Both queries run. Both numbers look fine on a slide. Only one is right. The gap is three rules that every actuary knows. Use earned premium, not written. Subtract recoveries. Remove the test partner. Three rules, nine points. Today I want to show you where those rules should live, so that an AI analyst reads them before it answers. It all runs on a synthetic travel insurer, so you can download it and try it yourself.
+**Show:** "Two answers" slide: 58.1% and 49.4%, then the three rules.
+**Proof:** `sql/waterfall_2025.sql`, `sql/naive_loss_ratio_2025.sql`, `evals/check_reference_sql.py`
 **Sources:** R1
 
-### TP-02 — The model is not the problem
-**Doing:** Show that frontier models already write good SQL, so the gap is conventions, not capability.
-**Say:** I expected an AI to get this wrong. It didn't, mostly. I gave a model only the schema and the data. It worked out that code 40 is a recovery, because reserves net to zero and recoveries don't. It spotted the test partner from the round 9,999.99 claims. That's impressive. But on the questions that depend on *our* conventions (what we call a large loss, what attritional means, frequency per thousand), it guessed. And a guess that looks right is the dangerous kind.
-**Show:** Slide 3: the pass rate grid for schema only vs. full context.
+### TP-02 — The AI can read your data
+**Doing:** Show that the model handles the data well, so the real gap is our decisions.
+**Say:** Now, I expected the AI to fail here. Mostly, it did not. I gave a model only the tables and the data. It worked out that code forty is a recovery. It found the test partner, because its claims all had the same round amount. Impressive. Then I asked questions that depend on our decisions. What exactly is attritional? Where is our large-loss threshold? Here, it had to guess. And its guesses looked right. That is the dangerous kind. So here is the idea for today. The AI can read your data. It cannot read your decisions.
+**Show:** "Read vs decide" slide: what it inferred on the left, what it had to guess on the right, with the through-line as a banner.
 **Proof:** `evals/blind-agent-results.md`
 **Sources:** R3, C2
 
-### TP-03 — What a context layer is
-**Doing:** Define a context layer as the onboarding pack for a new analyst, stored as files.
-**Say:** Think about onboarding a brilliant new analyst. They know SQL on day one. What they don't know is us: which premium to use, what a large loss is, which partner is fake. So we hand them a binder. A context layer is that binder, kept as plain files in git, and the AI reads the relevant pages before every answer. Nao is an open-source analytics agent built around exactly that idea: the context is a folder you can read, review and test.
-**Show:** Slide 4: the binder analogy, then the nao folder tree.
+### TP-03 — A context layer is the new analyst's binder
+**Doing:** Define a context layer as the onboarding pack for a new analyst, kept as files.
+**Say:** Think about a brilliant new analyst. They know SQL on day one. What they don't know is us: which premium, which threshold, which partner is fake. So we hand them a binder. A context layer is that binder, kept as plain text files. Nao is an open-source analytics agent built around this idea. One short rule sheet is read with every question. The agent looks up the other pages when it needs them. And because it is files, you can review it, version it, and test it.
+**Show:** The binder slide, then the nao project folder.
 **Proof:** `context/RULES.md`, `context/nao_config.yaml`
-**Sources:** A2, B5, H2
+**Sources:** A2, A4, B5, H2
 
 > **CLIP A** (Claire: why data teams should become context teams) 3 min
 
 ---
 
-## Act 2: Build it, step by step
+## Act 2: Build it in five steps
 
-### TP-04 — The sandbox
-**Doing:** Introduce the synthetic travel-insurance warehouse everyone can download and rerun.
-**Say:** Everything you'll see runs on synthetic data, so I can share all of it. It's a travel insurer: sixty thousand policies, about four thousand claims, sold through airlines, an online travel agency, a cruise line and direct. Like a real legacy system, transactions carry codes, not words: 10 is a payment, 20 a reserve change, 40 a recovery. It's valued at September 30, 2026. One command regenerates it, and the repo link is on the last slide.
-**Show:** Slide 5: the five mart tables and their row counts.
-**Proof:** `data/generate.py`, `README.md`
-**Sources:** R1
-
-### TP-05 — Step 1: scope one question
-**Doing:** Choose a bounded question and give the agent only the five clean tables it needs.
-**Say:** Step one is to be boring on purpose. Pick one question your team asks every quarter: the accident-year loss ratio. Give the agent only the clean mart tables that answer it, five here. Nao's own playbook says to start with no more than twenty. In the config I include the mart schema, exclude staging, and set allow-listed-only, so the agent can't query a raw feed even if it wanted to.
-**Show:** Slide 6: `nao_config.yaml` with include, exclude and allow_listed_only highlighted.
-**Proof:** `context/nao_config.yaml`
+### TP-04 — Step 1: scope, then sync
+**Doing:** Give the agent five clean tables, lock out raw feeds, and let nao describe them.
+**Say:** Step one: be boring on purpose. One question your team asks every quarter, and only the clean tables that answer it. Five here. Nao suggests no more than twenty to start. I lock out the raw feeds, so the agent cannot query them even by accident. Then one command, nao sync, writes a short description of every table: the columns, a few sample rows, the value counts. One warning: those sample rows go to the model. On real claims data, hide the personal columns first.
+**Show:** Scope card (in / out / locked), then the terminal running `nao sync`.
+**Demo:** 6s
+**Proof:** `context/nao_config.yaml`, `context/databases/type=duckdb/database=travel/schema=mart/table=claim_transactions/profiling.md`
 **Sources:** A3, A6, B4
 
-### TP-06 — Step 2: sync what the machine can see
-**Doing:** Run nao sync to generate per-table schema, previews and profiling as markdown files.
-**Say:** Step two is one command: nao sync. For every table it writes three markdown files: the columns, a few sample rows, and a profile of the values. This is what any agent sees out of the box. Notice what it says about code 40: nothing. It's a string with three values. The machine has the structure. It doesn't have the meaning.
-**Show:** Terminal: `nao sync`, then open `claim_transactions/profiling.md`.
-**Demo:** 12s
-**Proof:** `context/databases/type=duckdb/database=travel/schema=mart/table=claim_transactions/profiling.md`
-**Sources:** A1, A3
-
-### TP-07 — Step 3: annotate the tables
-**Doing:** Write each table's grain, codes and pitfalls into annotation files owned by an actuary.
-**Say:** Step three is where actuaries come in. Next to each table, nao keeps an annotations file, plain markdown, that sync never overwrites. Here I write what each code means, the grain, and the pitfalls. Recoveries are stored positive but reduce the loss. Free-look cancellations earn nothing. ZZTEST is test data. Each line is something you'd tell a new hire in their first week. Now it's written down once, and the reserving actuary owns it.
-**Show:** Slide 8: `claim_transactions/annotations.md`, with the recovery line highlighted.
+### TP-05 — Step 2: write down what the data means
+**Doing:** Annotate each table with its grain, codes and pitfalls, so answers are repeatable rather than guessed.
+**Say:** Step two: write down what the data means. Next to each table there is a notes file that nao never overwrites. Code ten is a payment, twenty a reserve change, forty a recovery, which reduces the loss. Free-look cancellations earn nothing. The test partner is not real business. Ideally you fix that last one upstream; until then, you write it down. The model guessed some of this right today. Tomorrow it may guess differently. Written down, it is the same answer every time.
+**Show:** The claim_transactions notes as a card, with the recovery line highlighted.
 **Proof:** `context/databases/type=duckdb/database=travel/schema=mart/table=claim_transactions/annotations.md`, `CODEOWNERS`
-**Sources:** A3, A4
+**Sources:** A3, B3
 
-### TP-08 — Step 4: define each metric once
-**Doing:** Write one canonical, owned definition per metric, including our company conventions.
-**Say:** Step four: define each metric once. The loss ratio file says net incurred over earned premium, accident-year basis, valued September 30, no IBNR. A second file holds decisions only we can make. A large loss is ten thousand dollars or more, our per-risk retention. Attritional means cat claims out and every other claim capped at ten thousand. Nao's docs are blunt here: two definitions of the same metric are the most common cause of inconsistent answers.
-**Show:** Slide 9: `semantics/loss_ratio.md` and `semantics/large_and_cat_losses.md`, side by side.
-**Proof:** `context/semantics/loss_ratio.md`, `context/semantics/large_and_cat_losses.md`
+### TP-06 — Step 3: write down your decisions
+**Doing:** Write one owned definition per metric, including conventions only the company can decide.
+**Say:** Step three is the heart of it: our decisions. One definition per metric, with an owner. Loss ratio: incurred, net of recoveries, gross of reinsurance, over earned premium, accident-year basis, no IBNR. Then the choices only we can make. A large loss is five thousand dollars or more. Attritional removes the hurricane claims and caps every other claim at five thousand. Another company might drop large claims instead. That gives thirty-two point eight instead of thirty-eight point two. Both are defensible. The AI cannot know which one is ours.
+**Show:** Two definition cards side by side, then the 38.2% vs 32.8% callout.
+**Proof:** `context/semantics/loss_ratio.md`, `context/semantics/large_and_cat_losses.md`, `sql/attritional_dropped_variant_2025.sql`
 **Sources:** A4, A5
 
-### TP-09 — Step 5: a lean RULES file as a router
-**Doing:** Keep RULES.md short: route to definitions, state the always-rules, and say when to ask.
-**Say:** Step five is the rules file. It's loaded with every single message, so it stays short. It does three jobs. It routes: for a loss ratio, read this file. It states the always-rules: exclude the test partner, use earned premium. And it says when to ask: if someone says "the loss ratio" with no year or basis, the agent should ask one question instead of picking one. That last rule is how you get an analyst who knows what it doesn't know.
-**Show:** Slide 10: `RULES.md`, about thirty lines.
+### TP-07 — Step 4: the rule sheet, and when to ask
+**Doing:** Keep one short rule sheet: where definitions live, what always applies, and when to ask.
+**Say:** Step four is a one-page rule sheet. The agent reads it with every question, so it stays short. It points to the definitions instead of copying them. It lists the rules that always apply: earned premium, no test partner. It says that "today" means our valuation date, the thirtieth of September. And the most important rule: when the question is unclear, ask. If someone types "what's the loss ratio?", with no year and no basis, a good analyst asks one question back.
+**Show:** The rule sheet as five plain-language bullets, with "When unclear, ask" in bold.
 **Proof:** `context/RULES.md`
 **Sources:** A4
 
-> **CLIP B** (Claire: how to tell a context problem from a data, model or query problem) 3 min
+### TP-08 — Step 5: write the answer key, then test
+**Doing:** Turn each question into a test with signed-off SQL, then compare agents with and without context.
+**Say:** Step five: before you trust the agent, write the answer key. Each test is a question in plain English, plus the SQL an actuary signs off. Nao runs the agent and compares its numbers with yours. One lesson: my first definitions included sample SQL, and a reviewer caught it. That is giving the answers away, so I removed it. Then I tested AI analysts at three levels. Tables only: five or six out of nine. Plus table notes: six. Plus our decisions: nine out of nine, twice. Synthetic data, small test, my own grader.
+**Show:** The results grid (three levels, with the attritional and large-loss rows highlighted).
+**Proof:** `context/tests/attritional_loss_ratio_ay2025.yml`, `evals/blind-agent-results.md`, `evals/grade.py`
+**Sources:** A7, R2, R3
 
-### TP-10 — Step 6: write the reference answers first
-**Doing:** Turn each question into a test: the prompt plus the SQL an actuary signs off.
-**Say:** Step six is the one I'd keep if you forget everything else. Before you trust the agent, write the answer key. A nao test is a small YAML file: the question in plain English and the SQL the actuary signs off. Nao runs the agent, takes its final numbers, and compares them with your reference. I wrote nine, including one where the right behaviour is to ask a question back. One warning from the docs: never paste the answers into the context, or you're testing memory.
-**Show:** Slide 11: `tests/attritional_loss_ratio_ay2025.yml`.
-**Proof:** `context/tests/attritional_loss_ratio_ay2025.yml`, `context/tests/ambiguous_loss_ratio.yml`
-**Sources:** A7
+> **CLIP B** (Claire: when an answer is wrong, is it the context, the data, the model or the query?) 3 min
 
-### TP-11 — Step 7: run the tests, read the grid
-**Doing:** Show the pass rate rising with each context layer, measured against the reference answers.
-**Say:** Then you run nao test, and you get a grid. I ran the same nine questions with blind AI analysts at three levels of context: schema only, plus annotations, plus definitions. Schema only passed six or seven of nine. With the full context, nine of nine, on both runs. The misses were all conventions. Attritional caps large claims; the blind agents dropped them, and got 39.3 instead of 41.6. Frequency is per thousand. And one agent answered when it should have asked. To be clear: this used my own grader on synthetic data, not a production claim.
-**Show:** Slide 12: the pass/fail grid by context level.
+### TP-09 — Diagnose before you fix
+**Doing:** Label each failure as context, data, query or test before changing anything.
+**Say:** So when a test fails, label it first. Context, data, query, or the test itself. In my runs, every agent without definitions said frequency was zero point zero eight. The answer key said eighty-two per thousand. Same number, different unit. Is that a wrong answer, or a vague question? Claire saw the same in her study. Some failures were the tests' fault. But most of her gain came from fixing the data model, not the prompts.
+**Show:** Four buckets: Context, Data, Query, Test.
 **Proof:** `evals/blind-agent-results.md`, `evals/grade.py`
-**Sources:** R3, A7
-
-### TP-12 — Diagnose before you fix
-**Doing:** Classify each failure as context, data, query or test before changing anything.
-**Say:** A failing test doesn't automatically mean missing context. In my second run, the best-informed agent failed the Caribbean monthly question. Its numbers were right; it returned the month as a number and my reference returned a date. That was my test's fault, so I fixed the test, not the context. Claire found the same in her own study: part of the gain came from fixing ambiguous tests. So label every failure first: context, data, query, or test.
-**Show:** Slide 13: four failure buckets with the real example.
-**Proof:** `evals/run2-coded/results.json`, `context/tests/caribbean_cancellation_claims_by_month_2025.yml`
 **Sources:** B3, A7
 
 ---
 
 ## Act 3: Use it, and keep it true
 
-### TP-13 — The investigation
-**Doing:** Use the tested context to follow a real deterioration from the portfolio down to its cause.
-**Say:** Now the fun part. The all-in loss ratio is 49.9 percent, but attritional is 41.6. Something big sits in the gap. By region, the Caribbean runs at 95.7 percent; everyone else is between 35 and 51. By loss month, Caribbean trip cancellations jump from about twenty a month to a hundred in August, and stay high through October. It's hurricane season, already tagged HU25 by the claims team. Every step shows its SQL.
-**Show:** Live in nao chat, or recorded backup: three questions, three charts.
-**Demo:** 15s
-**Proof:** `context/tests/loss_ratio_by_region_ay2025.yml`, `context/tests/caribbean_cancellation_claims_by_month_2025.yml`, `context/tests/attritional_loss_ratio_ay2025.yml`
+### TP-10 — The investigation
+**Doing:** Follow the deterioration from portfolio to cause with the tested context, step by step.
+**Say:** Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from under twenty a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. In full disclosure, I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
+**Show:** nao chat recording with jump-cuts: three questions, three charts.
+**Demo:** 8s
+**Proof:** `context/tests/loss_ratio_by_region_ay2025.yml`, `context/tests/caribbean_cancellation_claims_by_month_2025.yml`, `slides/charts.py`
 **Sources:** R4
 
-### TP-14 — Judgement stays with the actuary
-**Doing:** Separate what the agent found from what an actuary must decide.
-**Say:** Here's where I stop the agent. It found the spike in minutes and showed its work. It can't decide what the spike means. Is HU25 a one-off cat we load for, or a trend we should price into Caribbean trips? Do we revisit the cruise partner? Those are judgements with your name on them. What the context layer does is remember the decision once you make it, so the next person who asks gets your answer, not a fresh guess.
-**Show:** Slide 15: "found by the agent" vs. "decided by the actuary".
+### TP-11 — Judgement stays with the actuary
+**Doing:** Separate what the agent found from what an actuary must decide and record.
+**Say:** Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off catastrophe we load for, or a trend we should price into Caribbean trips? Do we revisit the cruise partner? Those decisions carry your signature. What the context layer does is remember the decision once you make it. The next person who asks gets your answer, not a fresh guess.
+**Show:** Two columns: "Found by the agent" and "Decided by you".
 **Proof:** `context/semantics/large_and_cat_losses.md`
 **Sources:** H2, H1
 
-### TP-15 — Close the loop: corrections become pull requests
-**Doing:** Show how a user's correction becomes a reviewed change to the shared context.
-**Say:** Context goes stale the day you ship it. Nao's answer is a feedback loop. It audits real usage on a schedule, including errors, downvotes and corrections, and ranks where the context is missing or wrong. Each recommendation shows the chats behind it and can open a pull request against the context repo. A human reviews it, merges it, and adds a test so it never regresses. There's an auto-merge mode. For actuarial definitions, I'd leave it off.
-**Show:** Slide 16: correction → recommendation → pull request → review → new test.
+### TP-12 — Corrections become reviewed changes
+**Doing:** Show how a user's correction becomes a reviewed, tested change to the shared context.
+**Say:** Context goes stale the day you ship it. Nao has a feedback loop for that. On a schedule, it reviews real usage: errors, thumbs down, corrections. It ranks where the context is missing or wrong, and shows the conversations behind each suggestion. It can open the change as a pull request: a proposed edit that someone must approve. There is a mode that opens those requests automatically, with no one reviewing the suggestion first. For actuarial definitions, I would leave it off.
+**Show:** Four boxes: correction → suggestion → reviewed change → new test.
 **Proof:** `CODEOWNERS`, `.github/workflows/context-tests.yml`
 **Sources:** A8, A9, H3
 
-### TP-16 — Ownership is the real deliverable
-**Doing:** Assign a named owner and a test to every definition, enforced on every change.
-**Say:** The technology is the easy part. The real deliverable is ownership. In this repo, a CODEOWNERS file says the reserving actuary approves any change to the loss ratio definition, and pricing owns frequency. Every pull request reruns the reference questions. That's the same governance we already apply to reserving models, applied to the words the AI reads. If nobody owns a definition, the agent will happily invent one.
-**Show:** Slide 17: `CODEOWNERS` and the CI check on a pull request.
-**Proof:** `CODEOWNERS`, `.github/workflows/context-tests.yml`
-**Sources:** A6, B1
+### TP-13 — Ownership is the real deliverable
+**Doing:** Give every definition a named owner and an automatic check, like any actuarial model.
+**Say:** We already do this for reserving models. Someone owns the assumption, someone reviews the change, and there is evidence it still works. Do the same for the words the AI reads. In this repository, the reserving actuary approves any change to the loss ratio definition, and pricing owns frequency. Every proposed change re-checks the answer key automatically, and the full agent test runs on a schedule. If nobody owns a definition, the agent will happily invent one.
+**Show:** Owner table: definition → owner → check.
+**Proof:** `CODEOWNERS`, `.github/workflows/context-tests.yml`, `evals/check_reference_sql.py`
+**Sources:** A6, B1, C6
 
-> **CLIP C** (Claire: who should own context, and what evidence shows it is improving) 3 min
+> **CLIP C** (Claire: who should own context, and what shows it is getting better) 3 min
 
 ---
 
 ## Close
 
-### TP-17 — What to do on Monday
-**Doing:** Give the audience a four-step starting checklist they can apply this week.
-**Say:** If you want to start on Monday, do four things. One: choose one bounded question your team argues about. Two: write down what it means, in plain words, with an owner. Three: write the reference answer, the SQL you would sign. Four: test the agent against it before anyone else uses it. Nao suggests twenty tables and twenty questions. I'd start with one question and earn the next nineteen.
-**Show:** Slide 18: the four-step checklist.
-**Proof:** `talk/talking-points.md`, `context/tests/loss_ratio_ay2025.yml`
+### TP-14 — What to do on Monday
+**Doing:** Give a four-step starting checklist the audience can apply this week.
+**Say:** If you want to start on Monday, do four things. One: choose one question your team argues about. Two: write down what it means and what you decided, in plain words, with an owner. Three: write the answer key, the SQL you would sign. Four: test the agent against it, before anyone else uses it. Nao suggests twenty tables and twenty questions. I would start with one question, and earn the next nineteen.
+**Show:** The four-step checklist.
+**Proof:** `context/tests/loss_ratio_ay2025.yml`, `README.md`
 **Sources:** A6, B4
 
-### TP-18 — Close
-**Doing:** Restate the core idea and point to the open repository.
-**Say:** The models are already fast, and they're getting very good at SQL. What they will never have on their own is your institutional knowledge: which premium, which partner, which threshold, which year. A context layer is how that knowledge stops living in people's heads and starts being written, owned and tested. Everything I showed you is in this repository, on synthetic data. Rerun it, break it, and tell me what you find. Thank you.
-**Show:** Slide 19: the repo link and QR code.
-**Proof:** `README.md`
+### TP-15 — Close
+**Doing:** Call back to the opening, say the closing line, and point to the repository.
+**Say:** Let me finish where I started. Same question, two answers, nine points apart. The models are already fast, and they are good at SQL. They will get better. But on their own, they will never know which premium you use, which partner is fake, or where you cap a large loss. That is your knowledge. Today it lives in people's heads. A context layer writes it down, gives it an owner, and tests it. So, if you remember one line: the model is fast. Your definitions make it right. Everything is in the repository. Run it, break it, and tell me what you find.
+**Show:** Closing line, repo link and QR code.
+**Proof:** `README.md`, `slides/public/qr.svg`
 **Sources:** R1, R3

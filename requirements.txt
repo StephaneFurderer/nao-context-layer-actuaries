@@ -1,5 +1,6 @@
-nao-core==0.4.2
-duckdb>=1.1,<2   # nao-core 0.4.2's ibis backend breaks on duckdb 2.x (fetch_arrow_table removed)
-numpy
-pandas
-pyyaml
+# Python >= 3.11 (pandas 3 / nao-core). macOS: nao-core 0.4.2 wheels need macOS 15+ on Apple silicon.
+nao-core[duckdb,anthropic]==0.4.2   # [duckdb] brings ibis + pyarrow + duckdb>=1.5.2,<2
+duckdb>=1.5.2,<2                    # nao-core 0.4.2's ibis backend breaks on duckdb 2.x
+numpy==2.5.3
+pandas>=3.0,<3.2
+pyyaml>=6

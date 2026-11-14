@@ -1,49 +1,54 @@
-# Blind-agent experiment: does the context layer change the answers?
+# Blind-agent experiment: what does the context layer change?
 
-**This is a simulation, not a nao run.** Independent LLM analysts (Claude Sonnet sub-agents, 2026-11-14) each got a copy of the warehouse and one context level, and nothing else. They were told to stay inside their folder and could run any exploratory SQL. Their final SQL was graded by `evals/grade.py`, which imitates the `nao test` comparison: row order ignored, 2 decimals, row counts must match. Small n: treat these as illustrations, not statistics.
+**This is a simulation, not a nao run.** Independent LLM analysts (Claude Sonnet sub-agents, 2026-11-14) each got a copy of the warehouse plus one context level, and nothing else. Each worked in an isolated folder and could run any exploratory SQL. Their final SQL is graded by `evals/grade.py`, which imitates the `nao test` comparison at **4 decimals** (row order ignored, row counts must match) and flags answers that are the same value in a different unit.
 
-Context levels (all built with nao-core 0.4.2):
-
-| Level | What the agent had |
+| Level | What the agent had (built with nao-core 0.4.2) |
 |---|---|
-| L0 | `nao sync` output only: columns, preview rows and profiling per table |
-| L1 | L0 + hand-written `annotations.md` per table (codes, grain, pitfalls) |
-| L2 | L1 + `semantics/*.md` (canonical metric definitions and company conventions) + `RULES.md` |
+| L0, tables only | `nao sync` output: columns, preview rows and profiling per table |
+| L1, plus table notes | L0 + hand-written `annotations.md` per table: codes, grain, pitfalls |
+| L2, plus our decisions | L1 + `semantics/*.md` (definitions and company conventions, prose only, no SQL) + `RULES.md` |
 
-## Run 3: final dataset, 9 questions (`evals/run3/`)
+## Run 4: final (`evals/run4/`)
 
-| Test | L0 a | L0 b | L1 | L2 a | L2 b | What decides it |
-|---|---|---|---|---|---|---|
-| loss_ratio_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | inferable from the data |
-| loss_ratio_by_region_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
-| net_incurred_by_coverage_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
-| earned_premium_2026_ytd | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
-| caribbean_cancellation_claims_by_month_2025 | ✅ | ✅ | ✅ | ✅ | ✅ | inferable (once the test said "return a date") |
-| large_loss_count_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | **convention, but guessed**: every agent picked $10k, the obvious round number |
-| attritional_loss_ratio_ay2025 | ❌ 39.3% | ❌ 39.3% | ❌ 39.3% | ✅ 41.6% | ✅ 41.6% | **convention**: we *cap* large claims at $10k; without context the agents *dropped* them |
-| claim_frequency_by_region_2025 | ❌ 0.079 | ❌ 0.082 | ❌ 0.082 | ✅ 82.1 | ✅ 82.1 | **convention**: we report per 1,000 policies |
-| ambiguous_loss_ratio (should ask) | ✅ asked | ❌ answered | ✅ asked | ✅ asked | ✅ asked | behaviour rule in `RULES.md` |
-| **Total** | **7/9** | **6/9** | **7/9** | **9/9** | **9/9** | |
+| Test | L0 a | L0 b | L1 a | L1 b | L2 a | L2 b | What decides it |
+|---|---|---|---|---|---|---|---|
+| loss_ratio_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | inferable from the data |
+| loss_ratio_by_region_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
+| net_incurred_by_coverage_ay2025 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
+| earned_premium_2026_ytd | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
+| caribbean_cancellation_claims_by_month_2025 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | inferable |
+| large_loss_count_ay2025 | ❌ 9 | ❌ 9 | ❌ 9 | ❌ 9 | ✅ 48 | ✅ 48 | **decision**: every agent guessed $10k; ours is $5k |
+| attritional_loss_ratio_ay2025 | ❌ 39.1% | ❌ 39.1% | ❌ 39.1% | ❌ 39.1% | ✅ 38.2% | ✅ 38.2% | **decision**: they *dropped* large claims (at $10k); we *cap* at $5k |
+| claim_frequency_by_region_2025 | ⚠️ 0.082 | ⚠️ 0.082 | ⚠️ 0.082 | ⚠️ 0.082 | ✅ 82.1 | ✅ 82.1 | **unit**: same value, per policy instead of per 1,000 |
+| ambiguous_loss_ratio (should ask) | ✅ asked | ❌ answered | ✅ asked | ✅ asked | ✅ asked | ✅ asked | behaviour rule in `RULES.md` |
+| **Passed** | **6/9** | **5/9** | **6/9** | **6/9** | **9/9** | **9/9** | |
+| Passed if unit-only answers count as right | 7/9 | 6/9 | 7/9 | 7/9 | 9/9 | 9/9 | |
 
-L0a's frequency answer (0.079) also differs from L0b's (0.082): it used a different denominator. Two runs at the same context level gave two different answers. That is the consistency problem `nao test -k` (pass^k) exists to catch.
+### Reading it honestly
 
-## What we learned (in order of discovery)
+- **The data-meaning rules were mostly inferred.** Even with tables only, agents worked out that code `40` is a recovery and that `ZZTEST` is test data, from evidence in the data (reserves net to zero; identical round claim amounts).
+- **The table notes (L1) changed nothing on this test set.** They make inferred rules *explicit and repeatable*, but every L1 miss was a company **decision**.
+- **The decisions were never inferred.** None of the four agents without `semantics/` found the $5k threshold or the cap-vs-drop convention. Their 39.1% looks entirely plausible.
+- **The unit failure is debatable** (see TP-09). It could be a wrong answer or a vague question. We count it as a failure because the reported number would be wrong by 1,000×, and flag it separately.
+- **Limits:** synthetic data designed by the presenter; one model family; n = 2 per level; 9 questions; the presenter's own grader. The profiling files the agents read came from the previous data version (value counts about 0.5% off). Agents queried the live data, so this does not change any result.
 
-1. **Run 1, self-describing data** (`evals/run1-self-describing/`). The first dataset named things too helpfully: `txn_type = 'recovery'`, and a partner literally called "QA test partner - do not use". The schema-only agent got the loss ratio right. Lesson: our synthetic data was unrealistically kind, so we recoded it the way legacy systems store it (numeric transaction codes, status codes, a neutral partner name).
-2. **Run 2, coded data, 7 questions** (`evals/run2-coded/results.json`). L0 5/7, L1 6/7, L2 6/7. Frontier models still **inferred** the codes, from evidence in the data: reserves net to zero on closed claims, and round $9,999.99 claims on one partner. Their only consistent miss was a **convention** (frequency per 1,000). L2 failed one test because it returned the month as an integer where the reference returned a date: **that was a test defect, not a context defect**. We fixed the test prompt.
-3. **Run 3, final** (table above). Adding two company conventions (attritional definition, large-loss threshold) produces a clean split. Rules that leave evidence in the data are mostly inferred. Rules that are *decisions* are not.
+## History: how the experiment was hardened (each run kept in `evals/`)
 
-## The honest takeaway for the talk
+1. **Run 1, self-describing data** (`run1-self-describing/`). The first dataset spelled things out (`txn_type = 'recovery'`, a partner named "QA test partner - do not use"). The schema-only agent simply read the answers. We recoded the data the way legacy systems store it.
+2. **Run 2, coded data** (`run2-coded/`). The agents *inferred* the codes anyway. One L2 failure was a test defect (month as an integer vs a date); we fixed the test.
+3. **Run 3** (`run3/`). This run added conventions: L0/L1 scored 6–7/9 and L2 scored 9/9. The review round then found three problems:
+   - the metric files contained **SQL patterns close to the reference answers** (leakage);
+   - the grader compared at **2 decimals**, which let a wrong attritional method pass;
+   - the "$10k retention" was implausible for travel, and every agent guessed it anyway.
 
-- Do not claim "AI can't write actuarial SQL". On this data it mostly can.
-- The context layer earns its keep on **conventions, consistency and knowing when to ask**. In this experiment that was the difference between 6–7/9 and 9/9.
-- An agent that infers a rule from the data today can infer something different tomorrow. Writing the rule down makes the answer **repeatable**, and the test proves it.
-- The `dropped vs capped` attritional miss is the most dangerous kind of error: 39.3% looks perfectly plausible.
+   Fixes: the definitions are now prose only, the grader compares at 4 decimals, and the threshold is a $5k *reporting* threshold. Hurricane loss dates now cluster just before departure. Everything was regenerated.
+4. **Run 4** (above): the final run, on the final data and context.
 
 ## Reproduce
 
 ```bash
-make data context            # regenerate the warehouse and sync the nao context
-python evals/grade.py <answers_dir>...
+make data context                       # regenerate the warehouse and sync the nao context
+python3 evals/grade.py evals/run4/L2a   # re-grade any run
+make check-sql                          # assert every number quoted in the talk
 ```
-Every agent's answers and notes are kept in `evals/run3/<run>/` (`notes.md` lists what each agent inferred).
+Each agent's SQL and `notes.md` (what it inferred) are kept in `evals/run4/<run>/`.

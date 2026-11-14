@@ -18,8 +18,8 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 | A4 | [Rules](https://docs.getnao.io/nao-agent/context-builder/rules-context) | `RULES.md` is loaded with every message. Keep it lean: it acts as an orchestrator and a context map. "Each metric should have exactly one canonical definition", and duplicating a definition is "the most common cause of inconsistent answers". Group conditionals are not an authorization boundary. |
 | A5 | [Principles](https://docs.getnao.io/nao-agent/context-engineering/principles) | The three metrics are reliability, speed and cost. Context should be MECE, modular and not bloated. Too little or too much context both hurt. |
 | A6 | [Playbook](https://docs.getnao.io/nao-agent/context-engineering/playbook) | Phase 1: ≤20 clean mart tables, docs, company and domain rules. Phase 2: 20 key questions, iterate until they pass, roll out to a small group, version in git, run `nao test` in CI. Phase 3: scale one domain at a time. |
-| A7 | [Evaluation](https://docs.getnao.io/nao-agent/context-engineering/evaluation) | A test is YAML with `name` and `prompt` plus `sql` and/or `assertions`. The agent's final data is compared with the reference SQL result: row order ignored, 2 decimals, rtol 1e-5, row counts must match. A `clarification` tool-call assertion is available. Supports `-m` multi-model, `-k` for pass^k, and `nao test server` on :8765. Advice: "Avoid leakage: don't put exact answers in your context." |
-| A8 | [Recommendations](https://docs.getnao.io/nao-agent/context-engineering/recommendations) | Online evals: a scheduled audit of tool errors, downvotes, corrections and coverage gaps. Produces ranked cards with provenance, can draft a patch and open a PR to the context repo. "YOLO mode" auto-opens PRs; we recommend leaving it off for actuarial context. |
+| A7 | [Evaluation](https://docs.getnao.io/nao-agent/context-engineering/evaluation) | A test is YAML with `name` and `prompt` plus `sql` and/or `assertions`. The agent's final data is compared with the reference SQL result: row order ignored, 2 decimals by default (`test.comparison.decimals`), rtol 1e-5, row counts must match. A `clarification` tool-call assertion is available. Supports `-m` multi-model and `-k` for pass^k; `nao test server` runs on :8765. `nao test` needs `nao chat` running, a nao login, and a model (default `openai:gpt-4.1`). Advice, paraphrased: don't include exact answers in your context. |
+| A8 | [Recommendations](https://docs.getnao.io/nao-agent/context-engineering/recommendations) | Online evals: a scheduled audit of tool errors, downvotes, corrections and coverage gaps. Produces ranked cards with provenance, can draft a patch and open a PR to the context repo. "YOLO mode" opens PRs automatically after each run, without human review of the recommendation. It does **not** merge them. We recommend leaving it off for actuarial context. |
 | A9 | [Recommendations demo video](https://youtu.be/ybdNfvGXPjQ) | The feedback-loop demo Stéphane already wrote about (see H3). |
 | A10 | [User groups](https://docs.getnao.io/nao-agent/chat/admin/user-groups) | Context permissions and row-level security by group. |
 | A11 | [nao GitHub](https://github.com/getnao/nao) | Open source. |
@@ -30,7 +30,7 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 |---|---|---|---|
 | B1 | [Data teams should become context teams](https://thenewaiorder.substack.com/p/data-teams-should-become-context) | Context engineering = governance + engineering + science. Data teams should first prove context engineering works on their own scope. | Opinion piece |
 | B2 | [First context engineering study: are semantic layers worth it?](https://thenewaiorder.substack.com/p/first-context-engineering-study-are) | 30 context experiments comparing metadata, sampling, profiling, dbt and rules. She asks readers to run their own tests rather than trust hers. | Her own benchmark, her own data |
-| B3 | [How I improved my analytics agent reliability from 45% to 86%](https://thenewaiorder.substack.com/p/how-i-improved-my-analytics-agent) | Four steps: fix the data model, add documentation, add date-selection rules, fix ambiguous tests. Data modeling had the most impact: "context engineering is mostly data engineering". | Vendor study, not independently replicated |
+| B3 | [How I improved my analytics agent reliability from 45% to 86%](https://thenewaiorder.substack.com/p/how-i-improved-my-analytics-agent) | Four steps: fix the data model, add documentation, add date-selection rules, fix ambiguous tests. Fixing tests was worth only 49→51%; the data model drove most of the gain (65→86%). Her conclusion: "context engineering is mostly data engineering". | Vendor study, not independently replicated. Claire is in the clips: quote the sizes correctly |
 | B4 | [dbt Roundup: The context engineering playbook (Claire Gouze)](https://roundup.getdbt.com/p/the-context-engineering-playbook) | Start with the team that asks the most questions, scope 10–20 tables, plug in existing dbt docs, run tests to get a baseline. | Podcast summary |
 | B5 | [Agentic analytics in production: conversation with Claire Gouze](https://thefulldatastack.substack.com/p/agentic-analytics-in-production) | nao's differentiator is building the context layer as a folder structure. | Interview |
 | B6 | [YC company page](https://www.ycombinator.com/companies/nao-labs) | nao Labs (YC X25): an open-source framework to build and deploy analytics agents. | |
@@ -44,6 +44,8 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 | C3 | [EntSQL benchmark review](https://www.themoonlight.io/es/review/entsql-a-benchmark-for-grounding-text-to-sql-in-long-context-enterprise-knowledge) | When private business rules are buried in long documents, the best system reached only 15.9% execution accuracy. Long unstructured docs are not a context layer. | Read via a review summary |
 | C4 | [Hex: effective context engineering for AI agents](https://hex.tech/blog/effective-context-engineering-for-ai-agents/) | "Confident, cleanly formatted, completely wrong": the typical failure is missing context, not missing capability. | Vendor blog |
 | C5 | [Collate: your text-to-SQL problem is not the LLM](https://www.getcollate.io/blog/your-text-to-sql-problem-is-not-the-llm) | The same LLM gives wrong or defensible answers depending on the context it reads. | Vendor claim (10.8% → 76.5%); do not quote the number on stage |
+
+| C6 | [ASOP No. 56, Modeling (Actuarial Standards Board)](https://www.actuarialstandardsboard.org/?p=20987) | Applies to actuaries who design, develop, use or review models, including models built by others. Effective October 1, 2020. Used for the TP-13 framing: "we already govern reserving models this way". | US standard. Name it only in Q&A or on a slide footer, and let actuaries draw the parallel |
 
 ## H. Stéphane's hub (internal, context only, not for public claims)
 
@@ -59,10 +61,10 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 
 | # | Artifact | Finding |
 |---|---|---|
-| R1 | `sql/waterfall_2025.sql` | The AY2025 loss ratio moves from a naive **58.9%** to a reference **49.9%** as three rules are applied: earned premium, recoveries, ZZTEST. |
-| R2 | `context/tests/*.yml` + `evals/grade.py` | Seven reference questions, graded like `nao test` |
-| R3 | `evals/blind-agent-results.md` | Pass rate of blind LLM analysts at context levels L0, L1 and L2. This is a simulation, not a nao run. |
-| R4 | `context/tests/loss_ratio_by_region_ay2025.yml` | Caribbean AY2025 loss ratio is **95.7%**, against 35–51% for every other region. This was planted in the synthetic data (the hurricane-season story). |
+| R1 | `sql/waterfall_2025.sql` | The AY2025 loss ratio moves from a naive **58.1%** to a reference **49.4%** as three rules are applied. Earned premium *raises* it slightly (58.1→60.1); recoveries (→54.9) and dropping ZZTEST (→49.4) bring it down. Asserted by `evals/check_reference_sql.py`. |
+| R2 | `context/tests/*.yml` + `evals/grade.py` | Nine reference questions (one must trigger a clarifying question), graded like `nao test` at 4 decimals |
+| R3 | `evals/blind-agent-results.md` | Run 4, final: tables only 6/9 and 5/9; plus table notes 6/9 and 6/9; full context 9/9 and 9/9. A simulation, not a nao run. |
+| R4 | `context/tests/loss_ratio_by_region_ay2025.yml` | Caribbean AY2025 loss ratio is **100.3%**, against 23–48% for every other region. Cancellations jump from under 20 a month to about 100 from August to October 2025. **Planted** in the synthetic data, and disclosed on stage. |
 
 ## TL;DRs (one line each, for quick reuse on stage or in posts)
 
@@ -73,4 +75,6 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 - **B3:** Most of the reliability gain came from data modeling and documentation, not from prompts.
 - **C1:** On an insurance dataset, giving the model governed metric definitions moved accuracy toward 100%.
 - **C2:** Better context beat switching models in a paired benchmark.
-- **R1:** Three sentences of institutional knowledge moved our loss ratio by 9 points.
+- **R1:** Three rules every actuary knows moved our loss ratio by 9 points (58.1% → 49.4%).
+- **R3:** Without the written conventions, every blind agent guessed a $10k large-loss threshold (ours is $5k) and dropped large claims instead of capping them.
+- **C6:** We already govern reserving models (ASOP 56); the context the AI reads deserves the same.
