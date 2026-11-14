@@ -220,19 +220,121 @@ incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross e
     ("TP-09", """---
 ---
 
-# Diagnose before you fix
+# When an answer is wrong: five suspects
 
-<div class="grid grid-cols-4 gap-5 mt-10 text-center text-xl">
-<div class="border-2 rounded-lg p-5"><b>Context</b><p class="text-base">a missing or unclear definition</p></div>
-<div class="border-2 rounded-lg p-5"><b>Data</b><p class="text-base">wrong, late or badly modelled tables</p></div>
-<div class="border-2 rounded-lg p-5"><b>Query</b><p class="text-base">right definition, wrong SQL</p></div>
-<div class="border-2 rounded-lg p-5 border-blue-500"><b>Test</b><p class="text-base">a vague question or answer key</p></div>
+<div class="grid grid-cols-5 gap-3 mt-6 text-center text-lg">
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">📘</div><b>Knowledge</b><p class="text-sm">the definition is wrong</p><p class="text-xs opacity-70">owner fixes</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">🗄️</div><b>Data</b><p class="text-sm">right rule, wrong rows</p><p class="text-xs opacity-70">data owner fixes</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">🙈</div><b>Runtime</b><p class="text-sm">the agent never saw it</p><p class="text-xs opacity-70">system owner fixes</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">🧮</div><b>Use</b><p class="text-sm">saw it, used it wrong</p><p class="text-xs opacity-70">checks catch it</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">📝</div><b>Test</b><p class="text-sm">the answer key was wrong</p><p class="text-xs opacity-70">test owner fixes</p></div>
 </div>
 
-<div class="mt-10 text-xl">Asia 2025: 0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
-<div class="mt-3 text-lg opacity-80">Claire's study: most of the gain came from the data model; fixing tests mattered, but less.</div>
+<div class="mt-10 text-xl"><b>Before you fix anything, answer three questions:</b></div>
+<div class="grid grid-cols-3 gap-6 mt-3 text-lg">
+<div>1. Which version of the knowledge was official? <span class="opacity-60">→ git</span></div>
+<div>2. What did the agent actually see? <span class="opacity-60">→ chat replay</span></div>
+<div>3. Which check ran? <span class="opacity-60">→ test results</span></div>
+</div>
 """),
     ("TP-10", """---
+---
+
+# Suspect 1 · The knowledge was wrong
+
+<div class="grid grid-cols-2 gap-10 mt-8 items-center">
+<div class="border-2 rounded-lg p-6 text-xl">
+
+**Loss ratio** = incurred ÷ <span class="line-through opacity-60">earned</span> **written** premium
+
+<div class="text-base opacity-70 mt-2">one word changed in the definition file</div>
+
+</div>
+<div class="text-center">
+<div class="text-6xl font-bold">47.8%</div>
+<div class="text-xl mt-2">instead of <b>49.4%</b>: plausible, and wrong</div>
+</div>
+</div>
+
+<div class="mt-10 text-xl">🧭 A GPS with an old map. <b>Fix: the definition's owner</b>: change it, date it, test the draft before approving.</div>
+<div class="mt-2 text-base opacity-70">nao (main): owners on context files · draft-vs-current test comparison</div>
+"""),
+    ("TP-11", """---
+---
+
+# Suspect 2 · The data was wrong
+
+<div class="grid grid-cols-2 gap-10 mt-8 text-center">
+<div class="border-2 rounded-lg p-6">
+<div class="text-xl">Test partner left in</div>
+<div class="text-6xl font-bold mt-3">54.9%</div>
+<div class="text-lg mt-2 opacity-80">instead of 49.4%</div>
+</div>
+<div class="border-2 rounded-lg p-6">
+<div class="text-xl">"Last 12 months" counted from <b>today</b></div>
+<div class="text-6xl font-bold mt-3">−17%</div>
+<div class="text-lg mt-2 opacity-80">of premium silently missing (data ends 30 Sep)<br/>41.1% instead of 42.8%</div>
+</div>
+</div>
+
+<div class="mt-8 text-xl"><b>Fix upstream, with the data owner.</b> Until then: lock the tables, and write down which clock to use.</div>
+"""),
+    ("TP-12", """---
+---
+
+# Suspect 3 · The agent never saw it
+
+<div class="text-2xl mt-10 text-center">
+
+`RULES.md` → table notes → `semantics/large_and_cat_losses.md` <span class="text-red-500">✗ not loaded</span>
+
+</div>
+
+<div class="grid grid-cols-2 gap-10 mt-10 text-xl">
+<div>
+
+### What the agent did
+- guessed a **\\$10k** threshold (ours: \\$5k)
+- **dropped** large claims (ours: cap)
+- **39.1%** instead of **38.2%**
+
+</div>
+<div>
+
+### Fix: whoever runs the system
+- route every question to the right file
+- keep files short enough to be read whole
+- check permissions don't hide a definition
+
+</div>
+</div>
+"""),
+    ("TP-13", """---
+---
+
+# Suspects 4 and 5 · Used it wrong, or the test was wrong
+
+<div class="grid grid-cols-2 gap-10 mt-8 text-xl">
+<div class="border-2 rounded-lg p-6">
+
+### 🧮 Used it wrong, nobody noticed
+- answered "what's the loss ratio?" **without asking**
+- frequency **per policy**, not per 1,000
+
+**Fix: checks.** An answer key, each question run **3 times**: one lucky answer isn't reliability.
+
+</div>
+<div class="border-2 rounded-lg p-6">
+
+### 📝 The test was wrong
+- the correct answer failed: the key expected a **date**, the agent gave a **month number**
+
+**Fix the test, not the context.**
+
+</div>
+</div>
+"""),
+    ("TP-14", """---
 ---
 
 # All-in 49.4% · attritional 38.2%: what's in the gap?
@@ -244,7 +346,7 @@ incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross e
 
 <div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: ~13/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
 """),
-    ("TP-11", """---
+    ("TP-15", """---
 ---
 
 # Judgement stays with the actuary
@@ -263,12 +365,12 @@ incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross e
 ### ✍️ Decided by you
 - a one-off cat, or a trend to price?
 - revisit the cruise partner?
-- **then write the decision down**
+- **then write it down, and certify the analysis**
 
 </div>
 </div>
 """),
-    ("TP-12", """---
+    ("TP-16", """---
 ---
 
 # Corrections become reviewed changes
@@ -282,7 +384,7 @@ incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross e
 
 <div class="mt-10 text-xl">Automatic mode opens the changes without review. <b>For actuarial definitions: off.</b></div>
 """),
-    ("TP-13", """---
+    ("TP-17", """---
 ---
 
 # Ownership is the real deliverable
@@ -301,7 +403,7 @@ incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross e
 <div class="mt-8 text-xl opacity-80">We already govern reserving models this way (ASOP 56). Do the same for the words the AI reads.</div>
 """),
     (None, CLIP("C", "Who should own the context, and how do you know it's getting better?")),
-    ("TP-14", """---
+    ("TP-18", """---
 ---
 
 # Monday morning
@@ -317,7 +419,7 @@ incurred **net of recoveries, gross of reinsurance**, excl. LAE<br/>÷ **gross e
 
 <div class="mt-8 text-xl opacity-80">Start with one question, and earn the next nineteen.</div>
 """),
-    ("TP-15", """---
+    ("TP-19", """---
 layout: center
 class: text-center
 ---

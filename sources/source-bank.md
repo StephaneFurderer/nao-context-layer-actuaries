@@ -47,6 +47,33 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 
 | C6 | [ASOP No. 56, Modeling (Actuarial Standards Board)](https://www.actuarialstandardsboard.org/?p=20987) | Applies to actuaries who design, develop, use or review models, including models built by others. Effective October 1, 2020. Used for the TP-13 framing: "we already govern reserving models this way". | US standard. Name it only in Q&A or on a slide footer, and let actuaries draw the parallel |
 
+## D. Stéphane's TLDR editorial pipeline (Notion) and the reading behind it
+
+| # | Source | Key point | Caution |
+|---|---|---|---|
+| D1 | Stéphane Furderer, [When an agent gets an assumption wrong, who fixes it?](https://lnkd.in/p/gBQVA9sg) (LinkedIn, 2026-11-13) | Three suspects: the knowledge (owner fixes it), the runtime (whoever runs the system), the checks (whoever designs them). After a bad answer: which knowledge version was official, what the agent saw, which check ran | His own post; the analogies (GPS with an old map, wrong chapter, unchecked calculator) are reused in TP-10 to TP-13 |
+| D2 | Stéphane's comment "Every definition needs a keeper" (TLDR pipeline, 2026-11-05) | Lighthouse rule: one keeper, a clear beam, fix drift using system recommendations plus fresh business context | Experience-based; the original post it replied to is unverified |
+| D3 | Ilho Ye, Wei Li, Jianlong Zhong, [Inside LinkedIn's data context layer](https://www.linkedin.com/blog/engineering/infrastructure/inside-linkedins-data-context-layer-curating-trustworthy-context-for-humans-and-agents) (2026-10-09) | Working SQL can still select the wrong dataset or omit a required filter. Generated context is refreshed while human-curated context stays intact, and is retrieved selectively | Company's own account; no insurance evidence |
+| D4 | Bonnie Xu, Aravind Suresh, Emma Tang, [Inside OpenAI's in-house data agent](https://openai.com/index/inside-our-in-house-data-agent/) (2026-01-29) | Table knowledge plus business context plus saved corrections; tests against reference queries; existing access controls kept | Vendor's internal account |
+| D5 | Claire Gouze, [Launching nao context recommendations](https://getnao.io/blog/launching-nao-context-recommendations/) (2026-06-22) | Usage, failed queries and corrections become ranked recommendations with provenance and a PR, reviewed and merged under version control | Vendor announcement (beta at the time) |
+| D6 | Anthropic, [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | Attention is finite: what reaches the model must be chosen at each step (suspect 3) | Inference-time curation, not ownership |
+| D7 | Birgitta Böckeler, [Harness engineering for coding agent users](https://martinfowler.com/articles/harness-engineering.html) (2026-04-02) | Guidance improves the first attempt, but only checks tell you whether it was right (suspect 4) | Coding-agent framing |
+| D8 | Trang NT, [Which LLM should run your agentic analytics?](https://trangntr.substack.com/p/which-llm-should-run-your-agentic) | "Correct" is not the same as "ready to send": accuracy and readiness scored separately | 20 questions, one e-commerce setting |
+
+## N. nao product changes on `main` (getnao/nao commit history, read 2026-11-14)
+
+| # | Change | Merged | Used in |
+|---|---|---|---|
+| N1 | Context Explorer: owners on context docs, with one owner applied to every doc of a table (#2486) | 2026-11-14 | TP-10, TP-17 |
+| N2 | Server-side context tests with multi-model and **draft comparison** (#2316); test runs visible to admins (#2427) | 2026-11-04 / 11-11 | TP-10 |
+| N3 | Agent attaches table annotations when reading `columns.md` (#2400) | 2026-11-10 | TP-12 / feature review |
+| N4 | Filter tests by owner and tag (#2399) | 2026-11-10 | TP-17 |
+| N5 | Chat replay with message times, answer duration and chat owner (#2286) | 2026-11-02 | TP-09 |
+| N6 | Admin-certified stories (#1732) | 2026-09-30 | TP-15 |
+| N7 | `nao test` pass@k / pass^k (#1368) and action assertions (#1408) | 2026-09-30 | TP-13 |
+
+These are merged on `main`; they may not be in nao-core 0.4.2 or on nao Cloud yet. Check before showing them live. Full map: `docs/nao-feature-review.md`.
+
 ## H. Stéphane's hub (internal, context only, not for public claims)
 
 | # | File in context-hub | Use |
@@ -77,4 +104,6 @@ Rule: anything that comes from a vendor is labelled as the vendor's claim. Synth
 - **C2:** Better context beat switching models in a paired benchmark.
 - **R1:** Three rules every actuary knows moved our loss ratio by 9 points (58.1% → 49.4%).
 - **R3:** Without the written conventions, every blind agent guessed a $10k large-loss threshold (ours is $5k) and dropped large claims instead of capping them.
+- **D1:** Three suspects: knowledge, runtime, checks. After a bad answer: which version, what it saw, which check ran.
+- **D3:** Working SQL can still pick the wrong dataset. Keep curated context separate from generated context.
 - **C6:** We already govern reserving models (ASOP 56); the context the AI reads deserves the same.

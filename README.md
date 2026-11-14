@@ -29,7 +29,10 @@ Three sentences any actuary knows move the answer by nine points. The context la
 | `context/tests/*.yml` | Step 6: reference answers (`nao test` format) |
 | `evals/` | Grader plus the blind-agent experiment (context levels L0/L1/L2) |
 | `sql/` | Evidence queries (naive vs. reference, waterfall) |
-| `talk/talking-points.md` | 15 talking points, each ≤ 60 s at 120 wpm (numbers counted as spoken), total ≤ 12 min, checked by `talk/check_talk.py` |
+| `talk/talking-points.md` | 19 talking points, each ≤ 60 s at 120 wpm (numbers counted as spoken), about 14.4 min, checked by `talk/check_talk.py` |
+| `docs/failure-points-and-validation.md` | **When an answer is wrong**: five suspects (knowledge, data, runtime, use, test), each with a measured example, an owner and the nao features that help; the audit-trail questions; the full validation checklist |
+| `docs/nao-feature-review.md` | Every nao feature against the talk (covered / add / Q&A), plus the roadmap themes |
+| `sql/failures/` | The failure examples: wrong definition (47.8%), test partner left in (54.9%), wrong clock (−17% premium) |
 | `reviews/` | The independent reviews (nao-skills audit, senior actuary, talk coach, nao fact-check, cold start) and what changed |
 | `slides/` | Slidev deck |
 | `sources/source-bank.md` | Every source, quote and TL;DR used |

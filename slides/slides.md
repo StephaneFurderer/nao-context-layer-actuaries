@@ -232,20 +232,138 @@ class: text-center
 ---
 ---
 
-# Diagnose before you fix
+# When an answer is wrong: five suspects
 
-<div class="grid grid-cols-4 gap-5 mt-10 text-center text-xl">
-<div class="border-2 rounded-lg p-5"><b>Context</b><p class="text-base">a missing or unclear definition</p></div>
-<div class="border-2 rounded-lg p-5"><b>Data</b><p class="text-base">wrong, late or badly modelled tables</p></div>
-<div class="border-2 rounded-lg p-5"><b>Query</b><p class="text-base">right definition, wrong SQL</p></div>
-<div class="border-2 rounded-lg p-5 border-blue-500"><b>Test</b><p class="text-base">a vague question or answer key</p></div>
+<div class="grid grid-cols-5 gap-3 mt-6 text-center text-lg">
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">📘</div><b>Knowledge</b><p class="text-sm">the definition is wrong</p><p class="text-xs opacity-70">owner fixes</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">🗄️</div><b>Data</b><p class="text-sm">right rule, wrong rows</p><p class="text-xs opacity-70">data owner fixes</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">🙈</div><b>Runtime</b><p class="text-sm">the agent never saw it</p><p class="text-xs opacity-70">system owner fixes</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">🧮</div><b>Use</b><p class="text-sm">saw it, used it wrong</p><p class="text-xs opacity-70">checks catch it</p></div>
+<div class="border-2 rounded-lg p-4"><div class="text-3xl">📝</div><b>Test</b><p class="text-sm">the answer key was wrong</p><p class="text-xs opacity-70">test owner fixes</p></div>
 </div>
 
-<div class="mt-10 text-xl">Asia 2025: 0.082 per policy vs 82 per 1,000: <b>wrong answer, or vague question?</b></div>
-<div class="mt-3 text-lg opacity-80">Claire's study: most of the gain came from the data model; fixing tests mattered, but less.</div>
+<div class="mt-10 text-xl"><b>Before you fix anything, answer three questions:</b></div>
+<div class="grid grid-cols-3 gap-6 mt-3 text-lg">
+<div>1. Which version of the knowledge was official? <span class="opacity-60">→ git</span></div>
+<div>2. What did the agent actually see? <span class="opacity-60">→ chat replay</span></div>
+<div>3. Which check ran? <span class="opacity-60">→ test results</span></div>
+</div>
 
 <!--
-[TP-09] So when a test fails, label it first. Context, data, query, or the test itself. In my runs, every agent without definitions gave Asia's frequency as zero point zero eight. The answer key said eighty-two per thousand. Same number, different unit. Is that a wrong answer, or a vague question? Claire saw the same in her study. Some failures came from badly written tests. But most of her gain came from fixing the data model, not the prompts.
+[TP-09] So what happens when an answer is wrong? Last week I wrote that there are three suspects: the knowledge, the runtime, and the checks. Building this demo, I found two more: the data, and the test itself. Before you fix anything, you need three facts. Which version of the knowledge was official? What did the agent actually see? Which check ran? Git gives you the version. Nao's chat replay shows the SQL and the files behind every answer. The test results show the checks. Let's take the suspects one by one.
+-->
+
+---
+---
+
+# Suspect 1 · The knowledge was wrong
+
+<div class="grid grid-cols-2 gap-10 mt-8 items-center">
+<div class="border-2 rounded-lg p-6 text-xl">
+
+**Loss ratio** = incurred ÷ <span class="line-through opacity-60">earned</span> **written** premium
+
+<div class="text-base opacity-70 mt-2">one word changed in the definition file</div>
+
+</div>
+<div class="text-center">
+<div class="text-6xl font-bold">47.8%</div>
+<div class="text-xl mt-2">instead of <b>49.4%</b>: plausible, and wrong</div>
+</div>
+</div>
+
+<div class="mt-10 text-xl">🧭 A GPS with an old map. <b>Fix: the definition's owner</b>: change it, date it, test the draft before approving.</div>
+<div class="mt-2 text-base opacity-70">nao (main): owners on context files · draft-vs-current test comparison</div>
+
+<!--
+[TP-10] Suspect one: the knowledge itself is wrong. Imagine someone writes "written premium" in the loss ratio definition. The answer becomes forty-seven point eight instead of forty-nine point four. Nothing breaks. It looks reasonable. It is like a GPS with an old map: confident, and wrong. The fix belongs to the owner of that definition. Change the file, date the change, and run the answer key on the draft before you approve it. Nao now records an owner on each context file, and can test a draft against the current version.
+-->
+
+---
+---
+
+# Suspect 2 · The data was wrong
+
+<div class="grid grid-cols-2 gap-10 mt-8 text-center">
+<div class="border-2 rounded-lg p-6">
+<div class="text-xl">Test partner left in</div>
+<div class="text-6xl font-bold mt-3">54.9%</div>
+<div class="text-lg mt-2 opacity-80">instead of 49.4%</div>
+</div>
+<div class="border-2 rounded-lg p-6">
+<div class="text-xl">"Last 12 months" counted from <b>today</b></div>
+<div class="text-6xl font-bold mt-3">−17%</div>
+<div class="text-lg mt-2 opacity-80">of premium silently missing (data ends 30 Sep)<br/>41.1% instead of 42.8%</div>
+</div>
+</div>
+
+<div class="mt-8 text-xl"><b>Fix upstream, with the data owner.</b> Until then: lock the tables, and write down which clock to use.</div>
+
+<!--
+[TP-11] Suspect two: the right definition, on the wrong data. Leave the test partner in, and the loss ratio jumps to fifty-four point nine. Or ask for "the last twelve months", and let the agent count from today, the fourteenth of November. Our data stops at the end of September, so the window quietly loses seventeen percent of its premium. The SQL runs. The number is wrong. The real fix belongs upstream, with the data owner. Until then: lock the tables, and write down which clock to use.
+-->
+
+---
+---
+
+# Suspect 3 · The agent never saw it
+
+<div class="text-2xl mt-10 text-center">
+
+`RULES.md` → table notes → `semantics/large_and_cat_losses.md` <span class="text-red-500">✗ not loaded</span>
+
+</div>
+
+<div class="grid grid-cols-2 gap-10 mt-10 text-xl">
+<div>
+
+### What the agent did
+- guessed a **\$10k** threshold (ours: \$5k)
+- **dropped** large claims (ours: cap)
+- **39.1%** instead of **38.2%**
+
+</div>
+<div>
+
+### Fix: whoever runs the system
+- route every question to the right file
+- keep files short enough to be read whole
+- check permissions don't hide a definition
+
+</div>
+</div>
+
+<!--
+[TP-12] Suspect three: the knowledge was right, but the agent never saw it. In my test, one group of agents had table notes that pointed to the definitions file. But the file was not in their folder. So they guessed: a ten thousand dollar threshold, and they dropped the large claims. Thirty-nine point one instead of thirty-eight point two. It is like a student who studied the wrong chapter. The fix belongs to whoever runs the system: route to the right file, keep files short, and check that permissions don't hide a definition.
+-->
+
+---
+---
+
+# Suspects 4 and 5 · Used it wrong, or the test was wrong
+
+<div class="grid grid-cols-2 gap-10 mt-8 text-xl">
+<div class="border-2 rounded-lg p-6">
+
+### 🧮 Used it wrong, nobody noticed
+- answered "what's the loss ratio?" **without asking**
+- frequency **per policy**, not per 1,000
+
+**Fix: checks.** An answer key, each question run **3 times**: one lucky answer isn't reliability.
+
+</div>
+<div class="border-2 rounded-lg p-6">
+
+### 📝 The test was wrong
+- the correct answer failed: the key expected a **date**, the agent gave a **month number**
+
+**Fix the test, not the context.**
+
+</div>
+</div>
+
+<!--
+[TP-13] Suspect four: the agent saw the rule, used it wrong, and nobody noticed. One agent answered "what's the loss ratio?" without asking which year. Others gave frequency per policy, not per thousand. Right numbers, wrong problem. The fix is checks: an answer key, and each question run three times, because one lucky answer is not reliability. Suspect five: the test itself. One agent failed only because my answer key expected a date and got a month number. I fixed the test, not the context.
 -->
 
 ---
@@ -261,7 +379,7 @@ class: text-center
 <div class="mt-2 text-lg">Caribbean AY 2025: <b>100%</b> · trip cancellations: ~13/month → <b>~100/month, Aug–Oct</b> · tagged <code>HU25</code> · <i>pattern planted in the synthetic data</i></div>
 
 <!--
-[TP-10] Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from about thirteen a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. To be clear: I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
+[TP-14] Now let's use it. All-in, forty-nine point four. Attritional, thirty-eight point two. Something big sits in the gap. By region, the Caribbean runs at one hundred percent. The others are between twenty-three and forty-eight. By month, Caribbean trip cancellations go from about thirteen a month to about a hundred, from August to October. The claims team tagged them as the 2025 hurricane season. To be clear: I planted that pattern in the data. The point is how fast you can follow it, with every query visible.
 -->
 
 ---
@@ -283,13 +401,13 @@ class: text-center
 ### ✍️ Decided by you
 - a one-off cat, or a trend to price?
 - revisit the cruise partner?
-- **then write the decision down**
+- **then write it down, and certify the analysis**
 
 </div>
 </div>
 
 <!--
-[TP-11] Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off event, or a cat exposure we must now price for in the Caribbean? Do we revisit the cruise partner? Those decisions carry your signature. What the context layer does is remember the decision once you make it. The next person who asks gets your answer, not a fresh guess.
+[TP-15] Here is where I stop the agent. It found the spike in minutes and showed its work. It cannot decide what the spike means. Is this a one-off event, or a cat exposure we must now price for in the Caribbean? Do we revisit the cruise partner? Those decisions carry your signature. Once you decide, write it into the context, and certify the analysis so others reuse the approved version. The next person who asks gets your answer, not a fresh guess.
 -->
 
 ---
@@ -307,7 +425,7 @@ class: text-center
 <div class="mt-10 text-xl">Automatic mode opens the changes without review. <b>For actuarial definitions: off.</b></div>
 
 <!--
-[TP-12] Context goes stale the day you ship it. Nao has a feedback loop for that. On a schedule, it reviews real usage: errors, thumbs down, corrections. It ranks where the context is missing or wrong, and shows the conversations behind each suggestion. It can open the change as a pull request: a proposed edit that someone must approve. There is a mode that opens those requests automatically, with no one reviewing the suggestion first. For actuarial definitions, I would leave it off.
+[TP-16] Context goes stale the day you ship it. Nao has a feedback loop for that. On a schedule, it reviews real usage: errors, thumbs down, corrections. It ranks where the context is missing or wrong, and shows the conversations behind each suggestion. It can open the change as a pull request: a proposed edit that someone must approve. There is a mode that opens those requests automatically, with no one reviewing the suggestion first. For actuarial definitions, I would leave it off.
 -->
 
 ---
@@ -329,7 +447,7 @@ class: text-center
 <div class="mt-8 text-xl opacity-80">We already govern reserving models this way (ASOP 56). Do the same for the words the AI reads.</div>
 
 <!--
-[TP-13] We already do this for reserving models. Someone owns the assumption, someone reviews the change, and there is evidence it still works. Do the same for the words the AI reads. In this repository, the reserving actuary approves any change to the loss ratio definition, and pricing owns frequency. Every proposed change re-checks the answer key automatically, and the full agent test runs on a schedule. If nobody owns a definition, the agent will happily invent one.
+[TP-17] We already do this for reserving models. Someone owns the assumption, someone reviews the change, and there is evidence it still works. Do the same for the words the AI reads. In this repository, the reserving actuary approves any change to the loss ratio definition, and pricing owns frequency. Nao now records those owners on the files, and on the tests. Every proposed change re-checks the answer key automatically, and the full agent test runs on a schedule. If nobody owns a definition, the agent will happily invent one.
 -->
 
 ---
@@ -360,7 +478,7 @@ class: text-center
 <div class="mt-8 text-xl opacity-80">Start with one question, and earn the next nineteen.</div>
 
 <!--
-[TP-14] If you want to start on Monday, do four things. One: choose one question your team argues about. Two: write down what it means and what you decided, in plain words, with an owner. Three: write the answer key, the SQL you would sign. Four: test the agent against it, before anyone else uses it. Nao suggests twenty tables and twenty questions. I would start with one question, and earn the next nineteen.
+[TP-18] If you want to start on Monday, do four things. One: choose one question your team argues about. Two: write down what it means and what you decided, in plain words, with an owner. Three: write the answer key, the SQL you would sign. Four: test the agent against it, before anyone else uses it. Nao suggests twenty tables and twenty questions. I would start with one question, and earn the next nineteen.
 -->
 
 ---
@@ -376,5 +494,5 @@ class: text-center
 <div class="mt-2 opacity-70">Synthetic data · run it · break it · tell me what you find</div>
 
 <!--
-[TP-15] Let me finish where I started. Same question, two answers, nine points apart. The models are already fast, and they are good at SQL. They will get better. But on their own, they will never know which premium you use, which partner is fake, or where you cap a large loss. That is your knowledge. Today it lives in people's heads. A context layer writes it down, gives it an owner, and tests it. So, if you remember one line: the model is fast. Your definitions make it right. Everything is in the repository. Run it, break it, and tell me what you find.
+[TP-19] Let me finish where I started. Same question, two answers, nine points apart. The models are already fast, and they are good at SQL. They will get better. But on their own, they will never know which premium you use, which partner is fake, or where you cap a large loss. That is your knowledge. Today it lives in people's heads. A context layer writes it down, gives it an owner, and tests it. So, if you remember one line: the model is fast. Your definitions make it right. Everything is in the repository. Run it, break it, and tell me what you find.
 -->

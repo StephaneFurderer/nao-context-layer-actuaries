@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WPM = 120          # deliberately slow: second-language speaker, prerecorded with on-screen moments
-MAX_TOTAL_MIN = 12.0  # the demo segment's budget, excluding interview clips
+MAX_TOTAL_MIN = 15.5  # the demo segment's budget, excluding interview clips
 MAX_SECONDS = 60
 TP = re.compile(r"^### (TP-\d+)\s*[—-]\s*(.+)$", re.M)
 

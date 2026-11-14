@@ -62,3 +62,10 @@ Five independent agents reviewed v1. None of them had seen the work being produc
   - TP-06: the through-line is now said a second time.
   - The basis now shows excl. LAE and gross earned premium, with AY 2025 fully closed, on slides 2 and 7.
   - French-speaker wording fixes: "end of September", "To be clear", "badly written tests".
+
+# v3: failure deep-dive and feature review (2026-11-14, Stéphane's request)
+
+- New section TP-09 to TP-13, *When an answer is wrong: five suspects*. It builds on Stéphane's post "When an agent gets an assumption wrong, who fixes it?" (the knowledge, the runtime, the checks) and adds the data and the test. Each suspect has a measured example, asserted by `make check-sql`.
+- `docs/failure-points-and-validation.md`: suspects, owners, audit-trail questions, and a validation checklist by cadence (before launch, every change, weekly, every answer, quarterly).
+- `docs/nao-feature-review.md`: feature coverage and roadmap. The talk now mentions owners on context files, draft-vs-current testing, chat replay, pass^k (three runs) and certified stories.
+- Source bank sections D (Notion TLDR pipeline) and N (nao changes on `main`).

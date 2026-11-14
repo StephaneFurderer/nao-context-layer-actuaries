@@ -40,6 +40,12 @@ months = {m.month: n for m, n in one("caribbean_cancellation_claims_by_month_202
 expect("Caribbean cancellations, avg Jan-Jun 2025 (TP-10: about 13/month)", sum(months[i] for i in range(1, 7)) / 6, 13.3, tol=0.5)
 expect("Caribbean cancellations, Aug 2025 (TP-10: ~100)", months[8], 102)
 expect("Caribbean cancellations, Oct 2025 (TP-10: still ~100)", months[10], 94)
+f2b = q("sql/failures/f2b_wrong_data_today_not_valuation.sql")[0]
+expect("F1 wrong definition: written premium (TP-10: 47.8%)", q("sql/failures/f1_knowledge_wrong_written_premium.sql")[0][0], 0.4778)
+expect("F2 test partner left in (TP-11: 54.9%)", q("sql/failures/f2_wrong_data_test_partner.sql")[0][0], 0.5489)
+expect("F2b 12m anchored on today (41.1%)", f2b[0], 0.4108)
+expect("F2b 12m anchored on valuation (42.8%)", f2b[1], 0.4276)
+expect("F2b premium lost by wrong clock (TP-11: 17%)", 1 - f2b[2], 0.1651, tol=0.005)
 expect("policies (60k)", con.sql("select count(*) from mart.policies").fetchone()[0], 60000)
 print()
 for f in sorted(glob.glob(str(ROOT / "sql" / "*.sql"))):
