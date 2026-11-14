@@ -1,0 +1,28 @@
+# Configuration documentation:
+# https://docs.getnao.io/nao-agent/context-builder/configuration#nao_config-yaml
+
+project_name: travel-actuarial
+databases:
+- type: duckdb
+  name: travel_warehouse
+  include:
+  - mart.*
+  exclude:
+  - staging.*
+  allow_listed_only: true
+  exclude_columns: []
+  preview_max_value_length: 1000
+  templates:
+  - columns
+  - preview
+  - profiling
+  # - query_history  -- Pulls most frequent queries / joins on each table
+  query_history_exclude_patterns: []
+  profiling:
+    refresh_policy: always
+    interval_days: 7
+  ai_summary:
+    refresh_policy: always
+    interval_days: 7
+  path: ../warehouse/travel.duckdb
+repos: []

@@ -1,0 +1,5 @@
+nao-core==0.4.2
+duckdb>=1.1,<2   # nao-core 0.4.2's ibis backend breaks on duckdb 2.x (fetch_arrow_table removed)
+numpy
+pandas
+pyyaml

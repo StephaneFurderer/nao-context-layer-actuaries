@@ -1,0 +1,1 @@
+CLARIFY: Which basis and period do you mean (accident year, report year or underwriting year, and which year), and do you want the all-in loss ratio or attritional (excl. cat and capped large losses)?

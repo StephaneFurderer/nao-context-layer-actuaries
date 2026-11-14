@@ -1,0 +1,1 @@
+CLARIFY: Which loss ratio do you mean: accident-year net incurred (paid + case reserves - recoveries) over earned premium, or paid-only; which year/period; and for the whole book or a breakdown (region, partner, coverage)?

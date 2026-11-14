@@ -1,0 +1,192 @@
+{
+  "/tmp/blind/L0a/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which loss ratio do you mean: which accident/calendar period, incurred basis (paid vs incurred incl. reserves, gross vs net of reco"
+    },
+    "attritional_loss_ratio_ay2025": {
+      "passed": false,
+      "message": "value 0.3928219502333305 vs expected 0.4156"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": false,
+      "message": "value 0.07894736842105263 vs expected 82.1000"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "large_loss_count_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  },
+  "/tmp/blind/L0b/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": false,
+      "message": "ANSWER: with ni as (select claim_id, sum(case when txn_code in ('10','20') then amount_usd when txn_code='40' then -amount_usd else 0 end) n"
+    },
+    "attritional_loss_ratio_ay2025": {
+      "passed": false,
+      "message": "value 0.3928219502333301 vs expected 0.4156"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": false,
+      "message": "value 0.08207771609833465 vs expected 82.1000"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "large_loss_count_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  },
+  "/tmp/blind/L1a/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which loss ratio do you mean: which accident/calendar period, and basis (net incurred vs paid, with or without cat and large losses"
+    },
+    "attritional_loss_ratio_ay2025": {
+      "passed": false,
+      "message": "value 0.3928219502333301 vs expected 0.4156"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": false,
+      "message": "value 0.08207771609833465 vs expected 82.1000"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "large_loss_count_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  },
+  "/tmp/blind/L2a/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which basis and period do you mean (accident, report or underwriting year, and which year or YTD), and should it be all-in or exclu"
+    },
+    "attritional_loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "large_loss_count_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  },
+  "/tmp/blind/L2b/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which basis and period do you mean (accident year, report year or underwriting year, and which year), and do you want the all-in lo"
+    },
+    "attritional_loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "large_loss_count_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  }
+}

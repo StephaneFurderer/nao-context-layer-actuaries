@@ -1,0 +1,1 @@
+CLARIFY: Which loss ratio do you mean: net incurred (paid + case reserves - recoveries) over earned premium, for which period (accident year, e.g. 2025, or calendar/to date), and for the whole book or a specific partner/region/coverage? Also should it be net of recoveries or gross?

@@ -1,0 +1,5 @@
+name: ambiguous_loss_ratio
+prompt: What's the loss ratio?
+assertions:
+  - type: tool_call
+    tool: clarification

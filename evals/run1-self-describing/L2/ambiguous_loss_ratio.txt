@@ -1,0 +1,1 @@
+CLARIFY: Which loss ratio do you mean: which period/year and basis (accident, report or underwriting year), and any segment (region, product, partner)? Default would be net incurred / earned premium on an accident-year basis.

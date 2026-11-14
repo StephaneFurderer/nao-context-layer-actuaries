@@ -1,0 +1,14 @@
+name: claim_frequency_by_region_2025
+prompt: What is claim frequency by destination region for 2025 departures?
+sql: |
+  WITH pol AS (
+    SELECT * FROM mart.policies
+    WHERE YEAR(departure_date) = 2025
+      AND partner_code <> 'ZZTEST'
+      AND policy_status <> 'CX'
+  )
+  SELECT pol.destination_region,
+         ROUND(1000.0 * COUNT(DISTINCT c.claim_id) / COUNT(DISTINCT pol.policy_id), 1) AS claims_per_1000
+  FROM pol
+  LEFT JOIN mart.claims c USING (policy_id)
+  GROUP BY 1

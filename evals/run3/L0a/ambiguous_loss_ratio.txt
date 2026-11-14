@@ -1,0 +1,1 @@
+CLARIFY: Which loss ratio do you mean: which accident/calendar period, incurred basis (paid vs incurred incl. reserves, gross vs net of recoveries), and should cat losses and the ZZTEST partner be included?

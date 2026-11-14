@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "schemas": {
+    "mart": {
+      "claim_transactions": [
+        {
+          "name": "txn_id",
+          "type": "string"
+        },
+        {
+          "name": "claim_id",
+          "type": "string"
+        },
+        {
+          "name": "txn_date",
+          "type": "date"
+        },
+        {
+          "name": "txn_code",
+          "type": "string"
+        },
+        {
+          "name": "amount_usd",
+          "type": "float64"
+        }
+      ],
+      "claims": [
+        {
+          "name": "claim_id",
+          "type": "string"
+        },
+        {
+          "name": "policy_id",
+          "type": "string"
+        },
+        {
+          "name": "coverage",
+          "type": "string"
+        },
+        {
+          "name": "loss_date",
+          "type": "date"
+        },
+        {
+          "name": "report_date",
+          "type": "date"
+        },
+        {
+          "name": "claim_status",
+          "type": "string"
+        },
+        {
+          "name": "cat_event_code",
+          "type": "string"
+        }
+      ],
+      "earned_premium_monthly": [
+        {
+          "name": "policy_id",
+          "type": "string"
+        },
+        {
+          "name": "accounting_month",
+          "type": "date"
+        },
+        {
+          "name": "earned_premium_usd",
+          "type": "float64"
+        }
+      ],
+      "partners": [
+        {
+          "name": "partner_code",
+          "type": "string"
+        },
+        {
+          "name": "partner_name",
+          "type": "string"
+        },
+        {
+          "name": "channel",
+          "type": "string"
+        }
+      ],
+      "policies": [
+        {
+          "name": "policy_id",
+          "type": "string"
+        },
+        {
+          "name": "partner_code",
+          "type": "string"
+        },
+        {
+          "name": "product",
+          "type": "string"
+        },
+        {
+          "name": "purchase_date",
+          "type": "date"
+        },
+        {
+          "name": "departure_date",
+          "type": "date"
+        },
+        {
+          "name": "return_date",
+          "type": "date"
+        },
+        {
+          "name": "destination_region",
+          "type": "string"
+        },
+        {
+          "name": "traveler_age_band",
+          "type": "string"
+        },
+        {
+          "name": "trip_cost_usd",
+          "type": "float64"
+        },
+        {
+          "name": "written_premium_usd",
+          "type": "float64"
+        },
+        {
+          "name": "policy_status",
+          "type": "string"
+        },
+        {
+          "name": "cancel_reason_code",
+          "type": "string"
+        },
+        {
+          "name": "cancel_date",
+          "type": "date"
+        }
+      ]
+    }
+  }
+}

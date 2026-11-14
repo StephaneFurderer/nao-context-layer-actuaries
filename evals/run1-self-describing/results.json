@@ -1,0 +1,92 @@
+{
+  "/tmp/blind/L0/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which loss ratio do you mean: accident-year net incurred (paid + case reserves - recoveries) over earned premium, or paid-only; whi"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": false,
+      "message": "value 1.0 vs expected '2025-01-01'"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": false,
+      "message": "value 0.08207771609833465 vs expected 82.1000"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  },
+  "/tmp/blind/L1/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which loss ratio do you mean: net incurred (paid + case reserves - recoveries) over earned premium, for which period (accident year"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": false,
+      "message": "value 0.08207771609833465 vs expected 82.1000"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  },
+  "/tmp/blind/L2/answers": {
+    "ambiguous_loss_ratio": {
+      "passed": true,
+      "message": "CLARIFY: Which loss ratio do you mean: which period/year and basis (accident, report or underwriting year), and any segment (region, product"
+    },
+    "caribbean_cancellation_claims_by_month_2025": {
+      "passed": false,
+      "message": "value 1.0 vs expected '2025-01-01'"
+    },
+    "claim_frequency_by_region_2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "earned_premium_2026_ytd": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "loss_ratio_by_region_ay2025": {
+      "passed": true,
+      "message": "match"
+    },
+    "net_incurred_by_coverage_ay2025": {
+      "passed": true,
+      "message": "match"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# Who must approve changes to the context the agent reads.
+# (GitHub handles are placeholders: replace with your team's.)
+/context/semantics/loss_ratio.md               @reserving-actuary
+/context/semantics/large_and_cat_losses.md     @reserving-actuary
+/context/semantics/claim_frequency.md          @pricing-actuary
+/context/databases/**/annotations.md           @reserving-actuary @data-engineering
+/context/RULES.md                              @analytics-lead
+/context/tests/                                @reserving-actuary @pricing-actuary
