@@ -1,8 +1,8 @@
-# Talking points: Building the context layer (demo segment, v2)
+# Talking points: Building the context layer (demo segment, v3)
 
 Session: *From Actuarial Knowledge to Trusted AI Analytics: Building the Context Layer*. Actuarial Technology Summit, December 15, 2026, prerecorded.
 
-Each point fits in 60 seconds or less. `python3 talk/check_talk.py` enforces this, counting numbers as they are spoken, at 120 wpm, plus any stated demo time. The segment budget is 12 minutes, excluding the interview clips. Every number is asserted by `make check-sql`; every outside claim traces to `sources/source-bank.md`.
+Each point fits in 60 seconds or less. `python3 talk/check_talk.py` enforces this, counting numbers as they are spoken, at 120 wpm, plus any stated demo time. The segment runs about 14.4 minutes (budget 15.5), excluding the interview clips. Every number is asserted by `make check-sql`; every outside claim traces to `sources/source-bank.md`.
 
 Fields:
 - **Doing**: what the audience should understand
